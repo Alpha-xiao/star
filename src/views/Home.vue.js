@@ -1,4 +1,5 @@
-/// <reference types="../../node_modules/.vue-global-types/vue_3.5_0_0_0.d.ts" />
+/// <reference types="D:/workspace/star/node_modules/@vue/language-core/types/template-helpers.d.ts" />
+/// <reference types="D:/workspace/star/node_modules/@vue/language-core/types/props-fallback.d.ts" />
 import { ref } from 'vue';
 import { showConfirmDialog, showToast } from 'vant';
 import { useRecordStore } from '@/stores/records';
@@ -71,28 +72,33 @@ const submitFormula = () => {
     handleRecord('奶粉喂养', { amount: formulaAmount.value });
     showFormulaDialog.value = false;
 };
-debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
-const __VLS_ctx = {};
+const __VLS_ctx = {
+    ...{},
+    ...{},
+};
 let __VLS_components;
+let __VLS_intrinsics;
 let __VLS_directives;
 /** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['form-item']} */ ;
 /** @type {__VLS_StyleScopedClasses['form-item']} */ ;
-// CSS variable injection 
-// CSS variable injection end 
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "home-container" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['home-container']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "header" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['header']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "title" },
 });
-const __VLS_0 = {}.VanButton;
-/** @type {[typeof __VLS_components.VanButton, typeof __VLS_components.vanButton, typeof __VLS_components.VanButton, typeof __VLS_components.vanButton, ]} */ ;
+/** @type {__VLS_StyleScopedClasses['title']} */ ;
+let __VLS_0;
+/** @ts-ignore @type { | typeof __VLS_components.vanButton | typeof __VLS_components.VanButton | typeof __VLS_components['van-button'] | typeof __VLS_components.vanButton | typeof __VLS_components.VanButton | typeof __VLS_components['van-button']} */
+vanButton;
 // @ts-ignore
-const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
+const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onClick': {} },
     icon: "replay",
     size: "small",
@@ -106,69 +112,96 @@ const __VLS_2 = __VLS_1({
     round: true,
     ...{ class: "undo-btn" },
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
-let __VLS_4;
 let __VLS_5;
-let __VLS_6;
-const __VLS_7 = {
-    onClick: (__VLS_ctx.onUndo)
-};
-__VLS_3.slots.default;
+const __VLS_6 = ({ click: {} },
+    { onClick: (__VLS_ctx.onUndo) });
+/** @type {__VLS_StyleScopedClasses['undo-btn']} */ ;
+const { default: __VLS_7 } = __VLS_3.slots;
+// @ts-ignore
+[onUndo,];
 var __VLS_3;
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+var __VLS_4;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "grid-menu" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['grid-menu']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ onClick: (...[$event]) => {
             __VLS_ctx.showPoopSheet = true;
+            // @ts-ignore
+            [showPoopSheet,];
         } },
     ...{ class: "menu-item poop" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
+/** @type {__VLS_StyleScopedClasses['poop']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "emoji" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "label" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['label']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ onClick: (...[$event]) => {
             __VLS_ctx.showPeeSheet = true;
+            // @ts-ignore
+            [showPeeSheet,];
         } },
     ...{ class: "menu-item pee" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
+/** @type {__VLS_StyleScopedClasses['pee']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "emoji" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "label" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['label']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ onClick: (...[$event]) => {
             __VLS_ctx.showBreastDialog = true;
+            // @ts-ignore
+            [showBreastDialog,];
         } },
     ...{ class: "menu-item breast" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
+/** @type {__VLS_StyleScopedClasses['breast']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "emoji" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "label" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['label']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ onClick: (...[$event]) => {
             __VLS_ctx.showFormulaDialog = true;
+            // @ts-ignore
+            [showFormulaDialog,];
         } },
     ...{ class: "menu-item formula" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
+/** @type {__VLS_StyleScopedClasses['formula']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "emoji" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.span, __VLS_intrinsicElements.span)({
+/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "label" },
 });
-const __VLS_8 = {}.VanActionSheet;
-/** @type {[typeof __VLS_components.VanActionSheet, typeof __VLS_components.vanActionSheet, ]} */ ;
+/** @type {__VLS_StyleScopedClasses['label']} */ ;
+let __VLS_8;
+/** @ts-ignore @type { | typeof __VLS_components.vanActionSheet | typeof __VLS_components.VanActionSheet | typeof __VLS_components['van-action-sheet']} */
+vanActionSheet;
 // @ts-ignore
-const __VLS_9 = __VLS_asFunctionalComponent(__VLS_8, new __VLS_8({
+const __VLS_9 = __VLS_asFunctionalComponent1(__VLS_8, new __VLS_8({
     ...{ 'onSelect': {} },
     show: (__VLS_ctx.showPoopSheet),
     actions: (__VLS_ctx.poopOptions),
@@ -184,17 +217,16 @@ const __VLS_10 = __VLS_9({
     closeOnClickAction: true,
     title: "💩 选择便便性状",
 }, ...__VLS_functionalComponentArgsRest(__VLS_9));
-let __VLS_12;
 let __VLS_13;
-let __VLS_14;
-const __VLS_15 = {
-    onSelect: (__VLS_ctx.onPoopSelect)
-};
+const __VLS_14 = ({ select: {} },
+    { onSelect: (__VLS_ctx.onPoopSelect) });
 var __VLS_11;
-const __VLS_16 = {}.VanActionSheet;
-/** @type {[typeof __VLS_components.VanActionSheet, typeof __VLS_components.vanActionSheet, ]} */ ;
+var __VLS_12;
+let __VLS_15;
+/** @ts-ignore @type { | typeof __VLS_components.vanActionSheet | typeof __VLS_components.VanActionSheet | typeof __VLS_components['van-action-sheet']} */
+vanActionSheet;
 // @ts-ignore
-const __VLS_17 = __VLS_asFunctionalComponent(__VLS_16, new __VLS_16({
+const __VLS_16 = __VLS_asFunctionalComponent1(__VLS_15, new __VLS_15({
     ...{ 'onSelect': {} },
     show: (__VLS_ctx.showPeeSheet),
     actions: (__VLS_ctx.peeOptions),
@@ -202,147 +234,164 @@ const __VLS_17 = __VLS_asFunctionalComponent(__VLS_16, new __VLS_16({
     closeOnClickAction: true,
     title: "💧 选择尿量/操作",
 }));
-const __VLS_18 = __VLS_17({
+const __VLS_17 = __VLS_16({
     ...{ 'onSelect': {} },
     show: (__VLS_ctx.showPeeSheet),
     actions: (__VLS_ctx.peeOptions),
     cancelText: "取消",
     closeOnClickAction: true,
     title: "💧 选择尿量/操作",
-}, ...__VLS_functionalComponentArgsRest(__VLS_17));
+}, ...__VLS_functionalComponentArgsRest(__VLS_16));
 let __VLS_20;
-let __VLS_21;
-let __VLS_22;
-const __VLS_23 = {
-    onSelect: (__VLS_ctx.onPeeSelect)
-};
+const __VLS_21 = ({ select: {} },
+    { onSelect: (__VLS_ctx.onPeeSelect) });
+var __VLS_18;
 var __VLS_19;
-const __VLS_24 = {}.VanDialog;
-/** @type {[typeof __VLS_components.VanDialog, typeof __VLS_components.vanDialog, typeof __VLS_components.VanDialog, typeof __VLS_components.vanDialog, ]} */ ;
+let __VLS_22;
+/** @ts-ignore @type { | typeof __VLS_components.vanDialog | typeof __VLS_components.VanDialog | typeof __VLS_components['van-dialog'] | typeof __VLS_components.vanDialog | typeof __VLS_components.VanDialog | typeof __VLS_components['van-dialog']} */
+vanDialog;
 // @ts-ignore
-const __VLS_25 = __VLS_asFunctionalComponent(__VLS_24, new __VLS_24({
+const __VLS_23 = __VLS_asFunctionalComponent1(__VLS_22, new __VLS_22({
     ...{ 'onConfirm': {} },
     show: (__VLS_ctx.showBreastDialog),
     title: "🤱 母乳喂养",
     showCancelButton: true,
 }));
-const __VLS_26 = __VLS_25({
+const __VLS_24 = __VLS_23({
     ...{ 'onConfirm': {} },
     show: (__VLS_ctx.showBreastDialog),
     title: "🤱 母乳喂养",
     showCancelButton: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_25));
-let __VLS_28;
-let __VLS_29;
-let __VLS_30;
-const __VLS_31 = {
-    onConfirm: (__VLS_ctx.submitBreast)
-};
-__VLS_27.slots.default;
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+}, ...__VLS_functionalComponentArgsRest(__VLS_23));
+let __VLS_27;
+const __VLS_28 = ({ confirm: {} },
+    { onConfirm: (__VLS_ctx.submitBreast) });
+const { default: __VLS_29 } = __VLS_25.slots;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "dialog-content" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['dialog-content']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "form-item" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({});
-const __VLS_32 = {}.VanRadioGroup;
-/** @type {[typeof __VLS_components.VanRadioGroup, typeof __VLS_components.vanRadioGroup, typeof __VLS_components.VanRadioGroup, typeof __VLS_components.vanRadioGroup, ]} */ ;
+/** @type {__VLS_StyleScopedClasses['form-item']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({});
+let __VLS_30;
+/** @ts-ignore @type { | typeof __VLS_components.vanRadioGroup | typeof __VLS_components.VanRadioGroup | typeof __VLS_components['van-radio-group'] | typeof __VLS_components.vanRadioGroup | typeof __VLS_components.VanRadioGroup | typeof __VLS_components['van-radio-group']} */
+vanRadioGroup;
 // @ts-ignore
-const __VLS_33 = __VLS_asFunctionalComponent(__VLS_32, new __VLS_32({
+const __VLS_31 = __VLS_asFunctionalComponent1(__VLS_30, new __VLS_30({
     modelValue: (__VLS_ctx.breastSide),
     direction: "horizontal",
 }));
-const __VLS_34 = __VLS_33({
+const __VLS_32 = __VLS_31({
     modelValue: (__VLS_ctx.breastSide),
     direction: "horizontal",
-}, ...__VLS_functionalComponentArgsRest(__VLS_33));
-__VLS_35.slots.default;
-const __VLS_36 = {}.VanRadio;
-/** @type {[typeof __VLS_components.VanRadio, typeof __VLS_components.vanRadio, typeof __VLS_components.VanRadio, typeof __VLS_components.vanRadio, ]} */ ;
+}, ...__VLS_functionalComponentArgsRest(__VLS_31));
+const { default: __VLS_35 } = __VLS_33.slots;
+let __VLS_36;
+/** @ts-ignore @type { | typeof __VLS_components.vanRadio | typeof __VLS_components.VanRadio | typeof __VLS_components['van-radio'] | typeof __VLS_components.vanRadio | typeof __VLS_components.VanRadio | typeof __VLS_components['van-radio']} */
+vanRadio;
 // @ts-ignore
-const __VLS_37 = __VLS_asFunctionalComponent(__VLS_36, new __VLS_36({
+const __VLS_37 = __VLS_asFunctionalComponent1(__VLS_36, new __VLS_36({
     name: "左侧",
 }));
 const __VLS_38 = __VLS_37({
     name: "左侧",
 }, ...__VLS_functionalComponentArgsRest(__VLS_37));
-__VLS_39.slots.default;
+const { default: __VLS_41 } = __VLS_39.slots;
+// @ts-ignore
+[showPoopSheet, showPeeSheet, showBreastDialog, poopOptions, onPoopSelect, peeOptions, onPeeSelect, submitBreast, breastSide,];
 var __VLS_39;
-const __VLS_40 = {}.VanRadio;
-/** @type {[typeof __VLS_components.VanRadio, typeof __VLS_components.vanRadio, typeof __VLS_components.VanRadio, typeof __VLS_components.vanRadio, ]} */ ;
+let __VLS_42;
+/** @ts-ignore @type { | typeof __VLS_components.vanRadio | typeof __VLS_components.VanRadio | typeof __VLS_components['van-radio'] | typeof __VLS_components.vanRadio | typeof __VLS_components.VanRadio | typeof __VLS_components['van-radio']} */
+vanRadio;
 // @ts-ignore
-const __VLS_41 = __VLS_asFunctionalComponent(__VLS_40, new __VLS_40({
+const __VLS_43 = __VLS_asFunctionalComponent1(__VLS_42, new __VLS_42({
     name: "右侧",
 }));
-const __VLS_42 = __VLS_41({
+const __VLS_44 = __VLS_43({
     name: "右侧",
-}, ...__VLS_functionalComponentArgsRest(__VLS_41));
-__VLS_43.slots.default;
-var __VLS_43;
-const __VLS_44 = {}.VanRadio;
-/** @type {[typeof __VLS_components.VanRadio, typeof __VLS_components.vanRadio, typeof __VLS_components.VanRadio, typeof __VLS_components.vanRadio, ]} */ ;
+}, ...__VLS_functionalComponentArgsRest(__VLS_43));
+const { default: __VLS_47 } = __VLS_45.slots;
 // @ts-ignore
-const __VLS_45 = __VLS_asFunctionalComponent(__VLS_44, new __VLS_44({
-    name: "双侧",
-}));
-const __VLS_46 = __VLS_45({
-    name: "双侧",
-}, ...__VLS_functionalComponentArgsRest(__VLS_45));
-__VLS_47.slots.default;
-var __VLS_47;
-var __VLS_35;
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
-    ...{ class: "form-item" },
-});
-__VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({});
-const __VLS_48 = {}.VanStepper;
-/** @type {[typeof __VLS_components.VanStepper, typeof __VLS_components.vanStepper, ]} */ ;
+[];
+var __VLS_45;
+let __VLS_48;
+/** @ts-ignore @type { | typeof __VLS_components.vanRadio | typeof __VLS_components.VanRadio | typeof __VLS_components['van-radio'] | typeof __VLS_components.vanRadio | typeof __VLS_components.VanRadio | typeof __VLS_components['van-radio']} */
+vanRadio;
 // @ts-ignore
-const __VLS_49 = __VLS_asFunctionalComponent(__VLS_48, new __VLS_48({
-    modelValue: (__VLS_ctx.breastDuration),
-    min: (1),
-    max: (60),
+const __VLS_49 = __VLS_asFunctionalComponent1(__VLS_48, new __VLS_48({
+    name: "双侧",
 }));
 const __VLS_50 = __VLS_49({
+    name: "双侧",
+}, ...__VLS_functionalComponentArgsRest(__VLS_49));
+const { default: __VLS_53 } = __VLS_51.slots;
+// @ts-ignore
+[];
+var __VLS_51;
+// @ts-ignore
+[];
+var __VLS_33;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+    ...{ class: "form-item" },
+});
+/** @type {__VLS_StyleScopedClasses['form-item']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({});
+let __VLS_54;
+/** @ts-ignore @type { | typeof __VLS_components.vanStepper | typeof __VLS_components.VanStepper | typeof __VLS_components['van-stepper']} */
+vanStepper;
+// @ts-ignore
+const __VLS_55 = __VLS_asFunctionalComponent1(__VLS_54, new __VLS_54({
     modelValue: (__VLS_ctx.breastDuration),
     min: (1),
     max: (60),
-}, ...__VLS_functionalComponentArgsRest(__VLS_49));
-var __VLS_27;
-const __VLS_52 = {}.VanDialog;
-/** @type {[typeof __VLS_components.VanDialog, typeof __VLS_components.vanDialog, typeof __VLS_components.VanDialog, typeof __VLS_components.vanDialog, ]} */ ;
+}));
+const __VLS_56 = __VLS_55({
+    modelValue: (__VLS_ctx.breastDuration),
+    min: (1),
+    max: (60),
+}, ...__VLS_functionalComponentArgsRest(__VLS_55));
 // @ts-ignore
-const __VLS_53 = __VLS_asFunctionalComponent(__VLS_52, new __VLS_52({
+[breastDuration,];
+var __VLS_25;
+var __VLS_26;
+let __VLS_59;
+/** @ts-ignore @type { | typeof __VLS_components.vanDialog | typeof __VLS_components.VanDialog | typeof __VLS_components['van-dialog'] | typeof __VLS_components.vanDialog | typeof __VLS_components.VanDialog | typeof __VLS_components['van-dialog']} */
+vanDialog;
+// @ts-ignore
+const __VLS_60 = __VLS_asFunctionalComponent1(__VLS_59, new __VLS_59({
     ...{ 'onConfirm': {} },
     show: (__VLS_ctx.showFormulaDialog),
     title: "🍼 奶粉喂养",
     showCancelButton: true,
 }));
-const __VLS_54 = __VLS_53({
+const __VLS_61 = __VLS_60({
     ...{ 'onConfirm': {} },
     show: (__VLS_ctx.showFormulaDialog),
     title: "🍼 奶粉喂养",
     showCancelButton: true,
-}, ...__VLS_functionalComponentArgsRest(__VLS_53));
-let __VLS_56;
-let __VLS_57;
-let __VLS_58;
-const __VLS_59 = {
-    onConfirm: (__VLS_ctx.submitFormula)
-};
-__VLS_55.slots.default;
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+}, ...__VLS_functionalComponentArgsRest(__VLS_60));
+let __VLS_64;
+const __VLS_65 = ({ confirm: {} },
+    { onConfirm: (__VLS_ctx.submitFormula) });
+const { default: __VLS_66 } = __VLS_62.slots;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "dialog-content" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.div, __VLS_intrinsicElements.div)({
+/** @type {__VLS_StyleScopedClasses['dialog-content']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
     ...{ class: "form-item center" },
 });
-__VLS_asFunctionalElement(__VLS_intrinsicElements.label, __VLS_intrinsicElements.label)({});
-const __VLS_60 = {}.VanStepper;
-/** @type {[typeof __VLS_components.VanStepper, typeof __VLS_components.vanStepper, ]} */ ;
+/** @type {__VLS_StyleScopedClasses['form-item']} */ ;
+/** @type {__VLS_StyleScopedClasses['center']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({});
+let __VLS_67;
+/** @ts-ignore @type { | typeof __VLS_components.vanStepper | typeof __VLS_components.VanStepper | typeof __VLS_components['van-stepper']} */
+vanStepper;
 // @ts-ignore
-const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
+const __VLS_68 = __VLS_asFunctionalComponent1(__VLS_67, new __VLS_67({
     modelValue: (__VLS_ctx.formulaAmount),
     min: (10),
     max: (300),
@@ -351,7 +400,7 @@ const __VLS_61 = __VLS_asFunctionalComponent(__VLS_60, new __VLS_60({
     inputWidth: "60px",
     buttonSize: "32px",
 }));
-const __VLS_62 = __VLS_61({
+const __VLS_69 = __VLS_68({
     modelValue: (__VLS_ctx.formulaAmount),
     min: (10),
     max: (300),
@@ -359,59 +408,12 @@ const __VLS_62 = __VLS_61({
     integer: true,
     inputWidth: "60px",
     buttonSize: "32px",
-}, ...__VLS_functionalComponentArgsRest(__VLS_61));
-var __VLS_55;
-/** @type {__VLS_StyleScopedClasses['home-container']} */ ;
-/** @type {__VLS_StyleScopedClasses['header']} */ ;
-/** @type {__VLS_StyleScopedClasses['title']} */ ;
-/** @type {__VLS_StyleScopedClasses['undo-btn']} */ ;
-/** @type {__VLS_StyleScopedClasses['grid-menu']} */ ;
-/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['poop']} */ ;
-/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
-/** @type {__VLS_StyleScopedClasses['label']} */ ;
-/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['pee']} */ ;
-/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
-/** @type {__VLS_StyleScopedClasses['label']} */ ;
-/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['breast']} */ ;
-/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
-/** @type {__VLS_StyleScopedClasses['label']} */ ;
-/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['formula']} */ ;
-/** @type {__VLS_StyleScopedClasses['emoji']} */ ;
-/** @type {__VLS_StyleScopedClasses['label']} */ ;
-/** @type {__VLS_StyleScopedClasses['dialog-content']} */ ;
-/** @type {__VLS_StyleScopedClasses['form-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['form-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['dialog-content']} */ ;
-/** @type {__VLS_StyleScopedClasses['form-item']} */ ;
-/** @type {__VLS_StyleScopedClasses['center']} */ ;
-var __VLS_dollars;
-const __VLS_self = (await import('vue')).defineComponent({
-    setup() {
-        return {
-            showPoopSheet: showPoopSheet,
-            showPeeSheet: showPeeSheet,
-            showBreastDialog: showBreastDialog,
-            showFormulaDialog: showFormulaDialog,
-            poopOptions: poopOptions,
-            peeOptions: peeOptions,
-            breastSide: breastSide,
-            breastDuration: breastDuration,
-            formulaAmount: formulaAmount,
-            onUndo: onUndo,
-            onPoopSelect: onPoopSelect,
-            onPeeSelect: onPeeSelect,
-            submitBreast: submitBreast,
-            submitFormula: submitFormula,
-        };
-    },
-});
-export default (await import('vue')).defineComponent({
-    setup() {
-        return {};
-    },
-});
-; /* PartiallyEnd: #4569/main.vue */
+}, ...__VLS_functionalComponentArgsRest(__VLS_68));
+// @ts-ignore
+[showFormulaDialog, submitFormula, formulaAmount,];
+var __VLS_62;
+var __VLS_63;
+// @ts-ignore
+[];
+const __VLS_export = (await import('vue')).defineComponent({});
+export default {};
