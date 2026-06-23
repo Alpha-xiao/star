@@ -4,8 +4,8 @@ import App from './App.vue';
 import router from './router';
 import './style.css';
 
-// Vant 组件样式按需引入时，部分全局样式仍需手动或通过插件引入
-// 这里我们使用 unplugin-vue-components 处理组件，但 Toast, Dialog 等函数式组件需要手动引入样式
+// 通过 unplugin-vue-components 自动注册 Vant 组件，但 Toast / Dialog 等
+// 函数式组件需要确保样式被加载，这里手动引入完整的 Vant 样式表
 import 'vant/lib/index.css';
 
 const app = createApp(App);
