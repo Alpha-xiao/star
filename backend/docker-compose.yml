@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: docker.1ms.run/library/postgres:16-alpine
+    container_name: babystar-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: babystar
+      POSTGRES_PASSWORD: babystar123
+      POSTGRES_DB: babystar
+    ports:
+      - '5432:5432'
+    volumes:
+      - babystar_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U babystar -d babystar']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  babystar_postgres_data:
