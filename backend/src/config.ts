@@ -28,5 +28,12 @@ export const config = {
   /** Refresh Token Cookie 签名密钥 */
   refreshSecret: process.env.REFRESH_SECRET || 'dev-refresh-secret-change-me',
   /** Refresh Token 有效天数 */
-  refreshExpiresInDays: Number(process.env.REFRESH_EXPIRES_DAYS || 30)
+  refreshExpiresInDays: Number(process.env.REFRESH_EXPIRES_DAYS || 30),
+  /** 防爬限流配置：默认每 IP+UA 每分钟 120 次，可通过环境变量调节 */
+  antiCrawler: {
+    windowMs: Number(process.env.ANTI_CRAWLER_WINDOW_MS || 60000),
+    max: Number(process.env.ANTI_CRAWLER_MAX || 120),
+    suspiciousMax: Number(process.env.ANTI_CRAWLER_SUSPICIOUS_MAX || 30),
+    blockMs: Number(process.env.ANTI_CRAWLER_BLOCK_MS || 300000)
+  }
 };

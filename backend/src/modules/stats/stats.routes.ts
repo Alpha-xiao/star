@@ -18,12 +18,11 @@ function getDayRange(date: string) {
   return { start, end };
 }
 
-async function calculateDailyStats(app: FastifyInstance, babyId: string, userId: string, date: string) {
+async function calculateDailyStats(app: FastifyInstance, babyId: string, date: string) {
   const { start, end } = getDayRange(date);
   const records = await app.prisma.careRecord.findMany({
     where: {
       babyId,
-      userId,
       deletedAt: null,
       happenedAt: { gte: start, lte: end }
     }
@@ -38,7 +37,11 @@ async function calculateDailyStats(app: FastifyInstance, babyId: string, userId:
       .filter((record) => record.eventType === 'breastfeeding')
       .reduce((total, record) => total + (record.duration || 0), 0),
     poopCount: records.filter((record) => record.eventType === 'poop').length,
-    peeCount: records.filter((record) => record.eventType === 'pee').length
+    peeCount: records.filter((record) => record.eventType === 'pee').length,
+    sleepDuration: records
+      .filter((record) => record.eventType === 'sleep')
+      .reduce((total, record) => total + (record.duration || 0), 0),
+    sleepCount: records.filter((record) => record.eventType === 'sleep').length
   };
 }
 
@@ -57,33 +60,26 @@ function eachDate(from: string, to: string) {
 
 /** 统计相关路由 */
 export async function statsRoutes(app: FastifyInstance) {
-  const ensureBabyOwner = async (babyId: string, userId: string) => {
-    const baby = await app.prisma.baby.findFirst({ where: { id: babyId, ownerId: userId } });
-    return !!baby;
-  };
-
   app.get('/stats/daily', async (request, reply) => {
     const query = dailyStatsQuerySchema.parse(request.query);
-    const userId = request.user.userId;
+    const access = await app.checkBabyAccess(request.user.userId, query.babyId);
 
-    if (!(await ensureBabyOwner(query.babyId, userId))) {
+    if (!access.hasAccess) {
       return reply.code(403).send({ message: '无权查看该宝宝统计' });
     }
 
-    return calculateDailyStats(app, query.babyId, userId, query.date);
+    return calculateDailyStats(app, query.babyId, query.date);
   });
 
   app.get('/stats/range', async (request, reply) => {
     const query = rangeStatsQuerySchema.parse(request.query);
-    const userId = request.user.userId;
+    const access = await app.checkBabyAccess(request.user.userId, query.babyId);
 
-    if (!(await ensureBabyOwner(query.babyId, userId))) {
+    if (!access.hasAccess) {
       return reply.code(403).send({ message: '无权查看该宝宝统计' });
     }
 
-    const items = await Promise.all(
-      eachDate(query.from, query.to).map((date) => calculateDailyStats(app, query.babyId, userId, date))
-    );
+    const items = await Promise.all(eachDate(query.from, query.to).map((date) => calculateDailyStats(app, query.babyId, date)));
 
     return { items };
   });

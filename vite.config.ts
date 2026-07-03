@@ -20,7 +20,7 @@ export default defineConfig({
         name: 'BabyStar - 新生儿护理记录',
         short_name: 'BabyStar',
         description: '新生儿日常护理极速记录H5',
-        theme_color: '#FFB6C1',
+        theme_color: '#E65100',
         icons: [
           {
             src: 'pwa-192x192.png',

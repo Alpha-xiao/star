@@ -8,6 +8,12 @@ export async function babiesRoutes(app: FastifyInstance) {
     return birthday ? new Date(`${birthday}T00:00:00.000Z`) : null;
   };
 
+  /** 按接口约定返回前端可直接使用的生日格式 */
+  const normalizeBaby = <T extends { birthday: Date | null }>(baby: T) => ({
+    ...baby,
+    birthday: baby.birthday ? baby.birthday.toISOString().slice(0, 10) : null
+  });
+
   // 创建宝宝档案，ownerId 始终来自登录用户
   app.post('/babies', async (request, reply) => {
     const input = createBabySchema.parse(request.body);
@@ -25,32 +31,53 @@ export async function babiesRoutes(app: FastifyInstance) {
       }
     });
 
-    return reply.code(201).send(baby);
+    return reply.code(201).send(normalizeBaby(baby));
   });
 
-  // 查询单个宝宝档案，只允许访问自己的宝宝
+  // 获取当前用户可访问的所有宝宝：自己创建 + 加入的宝宝
+  app.get('/babies/accessible', async (request) => {
+    const [ownedBabies, memberships] = await Promise.all([
+      app.prisma.baby.findMany({
+        where: { ownerId: request.user.userId },
+        orderBy: { createdAt: 'desc' }
+      }),
+      app.prisma.babyMember.findMany({
+        where: { userId: request.user.userId },
+        include: { baby: true },
+        orderBy: { joinedAt: 'desc' }
+      })
+    ]);
+
+    const babies = [
+      ...ownedBabies.map((baby) => ({ ...normalizeBaby(baby), relation: 'owner' as const })),
+      ...memberships.map((item) => ({ ...normalizeBaby(item.baby), relation: item.role }))
+    ];
+
+    return { babies };
+  });
+
+  // 查询单个宝宝档案，允许 owner 或家庭成员访问
   app.get('/babies/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
+    const access = await app.checkBabyAccess(request.user.userId, id);
+    if (!access.hasAccess) return reply.code(404).send({ message: 'Baby not found' });
 
-    const baby = await app.prisma.baby.findFirst({
-      where: { id, ownerId: request.user.userId }
-    });
-
+    const baby = await app.prisma.baby.findUnique({ where: { id } });
     if (!baby) return reply.code(404).send({ message: 'Baby not found' });
-    return baby;
+    return normalizeBaby(baby);
   });
 
-  // 更新宝宝档案，只允许更新自己的宝宝
+  // 更新宝宝档案，只有 owner/admin 可以编辑
   app.put('/babies/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
     const input = updateBabySchema.parse(request.body);
+    const access = await app.checkBabyAccess(request.user.userId, id, 'admin');
+    if (!access.hasAccess) return reply.code(403).send({ message: '权限不足' });
 
-    const exists = await app.prisma.baby.findFirst({
-      where: { id, ownerId: request.user.userId }
-    });
+    const exists = await app.prisma.baby.findUnique({ where: { id } });
     if (!exists) return reply.code(404).send({ message: 'Baby not found' });
 
-    return app.prisma.baby.update({
+    const baby = await app.prisma.baby.update({
       where: { id },
       data: {
         ...(input.name !== undefined && { name: input.name }),
@@ -62,13 +89,16 @@ export async function babiesRoutes(app: FastifyInstance) {
         ...(input.avatarUrl !== undefined && { avatarUrl: input.avatarUrl })
       }
     });
+
+    return normalizeBaby(baby);
   });
 
-  // 查询当前用户的宝宝列表
+  // 查询当前用户创建的宝宝列表，保留旧接口兼容现有调用
   app.get('/babies', async (request) => {
-    return app.prisma.baby.findMany({
+    const babies = await app.prisma.baby.findMany({
       where: { ownerId: request.user.userId },
       orderBy: { createdAt: 'desc' }
     });
+    return babies.map(normalizeBaby);
   });
 }

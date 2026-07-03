@@ -5,6 +5,10 @@ import { showToast } from 'vant';
 import { Baby, Calendar, Camera, ChevronLeft, Heart } from 'lucide-vue-next';
 import { useBabyStore } from '@/stores/baby';
 
+/**
+ * 首次建档页。
+ * 注册后或无可访问宝宝时进入这里，创建成功后 babyStore 会把新宝宝设为当前宝宝。
+ */
 const router = useRouter();
 const babyStore = useBabyStore();
 
@@ -21,6 +25,7 @@ const avatarUrl = ref('');
 const showDatePicker = ref(false);
 const pickerDate = ref<[string, string, string]>(['2025', '01', '01']);
 
+/** 把 Date 转成 Vant 日期选择器需要的字符串数组。 */
 const toPickerDate = (date: Date): [string, string, string] => [
   String(date.getFullYear()),
   String(date.getMonth() + 1).padStart(2, '0'),
@@ -33,7 +38,7 @@ const openDatePicker = () => {
   showDatePicker.value = true;
 };
 
-/** 日期选择器确认 */
+/** 日期选择器确认：档案入库使用 YYYY-MM-DD，页面展示使用中文日期。 */
 const onDateConfirm = ({ selectedValues }: { selectedValues: Array<string | number> }) => {
   const [year, month, day] = selectedValues.map(String);
   birthday.value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -55,6 +60,7 @@ const onAvatarSelect = (item: { name: string }) => {
 const onAvatarChange = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (file) {
+    // 创建页头像只做本地预览，当前建档接口尚未提交头像字段。
     const reader = new FileReader();
     reader.onload = () => {
       avatarUrl.value = reader.result as string;
@@ -68,7 +74,7 @@ const canSubmit = computed(() => name.value.trim() && birthday.value && gender.v
 
 const isSubmitting = ref(false);
 
-/** 提交创建 */
+/** 提交创建档案；成功后 Store 会同步刷新当前宝宝与可访问宝宝列表。 */
 const onSubmit = async () => {
   if (!canSubmit.value || isSubmitting.value) return;
   isSubmitting.value = true;

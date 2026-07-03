@@ -5,19 +5,28 @@ import { syncPendingRecords } from '@/utils/api';
 import { useAuthStore } from '@/stores/auth';
 import { useBabyStore } from '@/stores/baby';
 
+/**
+ * 根组件负责承载页面转场、底部导航和应用级离线同步触发。
+ * 登录态与宝宝档案的判定仍交给路由守卫和对应 Store 处理。
+ */
 const route = useRoute();
 const authStore = useAuthStore();
 const babyStore = useBabyStore();
 
-const active = computed(() => (route.path === '/stats' ? 1 : 0));
+const active = computed(() => {
+  if (route.path === '/stats') return 1;
+  if (route.path === '/profile') return 2;
+  return 0;
+});
 
 const showTabbar = computed(() => {
-  return !['/login', '/register', '/profile', '/profile/create'].includes(route.path);
+  return !['/login', '/register', '/profile/create', '/family', '/family/join'].includes(route.path);
 });
 
 onMounted(async () => {
   if (authStore.isLoggedIn) {
-    await babyStore.loadBaby();
+    await babyStore.loadAccessibleBabies();
+    // 启动和网络恢复时重试离线暂存记录，保持本地先记、后端后同步的链路。
     syncPendingRecords();
     window.addEventListener('online', syncPendingRecords);
   }
@@ -40,6 +49,7 @@ onMounted(async () => {
       class="border-t border-t-[var(--border-light)]">
       <van-tabbar-item replace to="/" icon="edit">记录</van-tabbar-item>
       <van-tabbar-item replace to="/stats" icon="chart-trending-o">统计</van-tabbar-item>
+      <van-tabbar-item replace to="/profile" icon="contact-o">档案</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>

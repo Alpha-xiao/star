@@ -5,14 +5,19 @@ import { showToast } from 'vant';
 import { Lock, Phone, User } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 
+/**
+ * 注册页：创建账号并立即进入首次宝宝建档流程。
+ */
 const router = useRouter();
 const authStore = useAuthStore();
 
 const phone = ref('');
 const password = ref('');
 const nickname = ref('');
+/** 注册按钮可用性：手机号格式与密码长度都通过后才允许提交。 */
 const canSubmit = computed(() => /^1\d{10}$/.test(phone.value) && password.value.length >= 6);
 
+/** 注册成功后进入宝宝建档流程。 */
 const onSubmit = async () => {
   if (!canSubmit.value || authStore.isLoading) return;
   try {

@@ -16,11 +16,13 @@ declare module 'vue' {
     VanActionSheet: typeof import('vant/es')['ActionSheet']
     VanDatePicker: typeof import('vant/es')['DatePicker']
     VanDialog: typeof import('vant/es')['Dialog']
+    VanField: typeof import('vant/es')['Field']
     VanLoading: typeof import('vant/es')['Loading']
     VanPopup: typeof import('vant/es')['Popup']
     VanRadio: typeof import('vant/es')['Radio']
     VanRadioGroup: typeof import('vant/es')['RadioGroup']
     VanStepper: typeof import('vant/es')['Stepper']
+    VanSwipeCell: typeof import('vant/es')['SwipeCell']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
   }

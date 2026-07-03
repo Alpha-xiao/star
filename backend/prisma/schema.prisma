@@ -12,6 +12,7 @@ enum CareEventType {
   pee
   breastfeeding
   formula
+  sleep
 }
 
 enum BreastSide {
@@ -25,6 +26,12 @@ enum RecordSource {
   pwa
 }
 
+enum FamilyRole {
+  admin
+  member
+  viewer
+}
+
 model User {
   id           String   @id @default(uuid()) @db.Uuid
   phone        String?  @unique
@@ -36,7 +43,10 @@ model User {
 
   babies        Baby[]
   records       CareRecord[]
+  growthRecords GrowthRecord[]
   refreshTokens RefreshToken[]
+  memberships   BabyMember[]
+  createdCodes  InviteCode[]  @relation("inviteCreator")
 
   @@map("users")
 }
@@ -67,11 +77,49 @@ model Baby {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  owner   User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  records CareRecord[]
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  records     CareRecord[]
+  growthRecords GrowthRecord[]
+  members     BabyMember[]
+  inviteCodes InviteCode[]
 
   @@index([ownerId])
   @@map("babies")
+}
+
+model BabyMember {
+  id        String     @id @default(uuid()) @db.Uuid
+  babyId    String     @map("baby_id") @db.Uuid
+  userId    String     @map("user_id") @db.Uuid
+  role      FamilyRole @default(member)
+  joinedAt  DateTime   @default(now()) @map("joined_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  baby Baby @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([babyId, userId])
+  @@index([userId])
+  @@index([babyId])
+  @@map("baby_members")
+}
+
+model InviteCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique
+  babyId    String   @map("baby_id") @db.Uuid
+  createdBy String   @map("created_by") @db.Uuid
+  expiresAt DateTime @map("expires_at")
+  usedCount Int      @default(0) @map("used_count")
+  maxUses   Int      @default(10) @map("max_uses")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  baby    Baby @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  creator User @relation("inviteCreator", fields: [createdBy], references: [id])
+
+  @@index([babyId])
+  @@map("invite_codes")
 }
 
 model CareRecord {
@@ -81,6 +129,7 @@ model CareRecord {
   userId     String        @map("user_id") @db.Uuid
   eventType  CareEventType @map("event_type")
   happenedAt DateTime      @map("happened_at")
+  endedAt    DateTime?     @map("ended_at")
   duration   Int?
   side       BreastSide?
   amount     Int?
@@ -90,10 +139,32 @@ model CareRecord {
   createdAt  DateTime      @default(now()) @map("created_at")
   updatedAt  DateTime      @updatedAt @map("updated_at")
 
-  baby     Baby              @relation(fields: [babyId], references: [id], onDelete: Cascade)
-  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  baby Baby @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([babyId, happenedAt(sort: Desc)])
   @@index([userId, happenedAt(sort: Desc)])
   @@map("care_records")
+}
+
+model GrowthRecord {
+  id                String       @id @default(uuid()) @db.Uuid
+  clientId          String       @unique @map("client_id")
+  babyId            String       @map("baby_id") @db.Uuid
+  userId            String       @map("user_id") @db.Uuid
+  measuredAt        DateTime     @map("measured_at") @db.Date
+  weight            Float?       // kg，精度 0.01，范围 0.5-30
+  heightCm          Float?       @map("height_cm")  // cm，精度 0.1，范围 30-150
+  headCircumference Float?      @map("head_circumference") // cm，精度 0.1，范围 25-60
+  note              String?
+  source            RecordSource @default(pwa)
+  deletedAt         DateTime?    @map("deleted_at")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  baby Baby @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([babyId, measuredAt(sort: Desc)])
+  @@map("growth_records")
 }

@@ -34,8 +34,15 @@ export const useRecordStore = defineStore('records', () => {
     saveToLocal();
   };
 
+  /** 清空当前宝宝的本地即时记录缓存 */
+  const clearRecords = () => {
+    todayRecords.value = [];
+    saveToLocal();
+  };
+
   return {
     todayRecords,
-    addRecord
+    addRecord,
+    clearRecords
   };
 });

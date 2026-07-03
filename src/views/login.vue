@@ -6,6 +6,9 @@ import { Lock, Phone, Star } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import { useBabyStore } from '@/stores/baby';
 
+/**
+ * 登录页：完成账号登录后恢复宝宝档案，并根据 redirect 或建档状态决定落点。
+ */
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
@@ -22,6 +25,7 @@ const onSubmit = async () => {
     await babyStore.loadBaby();
     showToast('登录成功');
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '';
+    // 登录成功后优先回到被守卫拦截的原目标；没有宝宝档案则进入建档页。
     const target = redirect && redirect !== '/login' ? redirect : babyStore.hasProfile ? '/' : '/profile/create';
     console.log('target: ', target);
     window.location.replace(target);
