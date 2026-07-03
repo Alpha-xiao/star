@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { syncPendingRecords } from '@/utils/api';
 import { useAuthStore } from '@/stores/auth';
 import { useBabyStore } from '@/stores/baby';
+import { useThemeStore } from '@/stores/theme';
 
 /**
  * 根组件负责承载页面转场、底部导航和应用级离线同步触发。
@@ -12,6 +13,10 @@ import { useBabyStore } from '@/stores/baby';
 const route = useRoute();
 const authStore = useAuthStore();
 const babyStore = useBabyStore();
+const themeStore = useThemeStore();
+
+// 应用启动时立即初始化主题，避免首屏闪烁
+themeStore.init();
 
 const active = computed(() => {
   if (route.path === '/stats') return 1;
@@ -69,8 +74,24 @@ onMounted(async () => {
   --van-primary-color: var(--brand-primary);
   --van-button-default-border-color: var(--brand-primary);
   --van-action-sheet-max-height: 70%;
-  --van-tabbar-background: #ffffff;
+  --van-tabbar-background: var(--surface-card);
   --van-tabbar-item-font-size: 11px;
   --van-tabbar-height: 56px;
+  --van-cell-background: var(--surface-card);
+  --van-cell-text-color: var(--text-primary);
+  --van-background: var(--surface-page);
+  --van-background-2: var(--surface-card);
+  --van-text-color: var(--text-primary);
+  --van-text-color-2: var(--text-secondary);
+  --van-text-color-3: var(--text-tertiary);
+  --van-border-color: var(--border-light);
+  --van-dialog-background: var(--surface-card);
+  --van-dialog-header-text-color: var(--text-primary);
+  --van-popup-background: var(--surface-card);
+  --van-field-input-text-color: var(--text-primary);
+  --van-field-placeholder-text-color: var(--text-disabled);
+  --van-action-sheet-item-background: var(--surface-card);
+  --van-picker-background: var(--surface-card);
+  --van-loading-text-color: var(--text-secondary);
 }
 </style>

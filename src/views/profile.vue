@@ -2,9 +2,24 @@
 import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { showToast } from 'vant';
-import { Baby, Calendar, Camera, ChevronLeft, ChevronRight, Download, Heart, Pencil, Users, X } from 'lucide-vue-next';
+import {
+  ArrowRight,
+  Baby,
+  Calendar,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Heart,
+  Moon,
+  Pencil,
+  Sun,
+  Users,
+  X
+} from 'lucide-vue-next';
 import { useBabyStore } from '@/stores/baby';
 import { useGrowthStore } from '@/stores/growth';
+import { useThemeStore, type ThemeMode } from '@/stores/theme';
 
 /**
  * 宝宝档案页：展示当前宝宝资料，并在管理员/创建者权限下允许编辑。
@@ -13,6 +28,7 @@ import { useGrowthStore } from '@/stores/growth';
 const router = useRouter();
 const babyStore = useBabyStore();
 const growthStore = useGrowthStore();
+const themeStore = useThemeStore();
 
 // 查看 / 编辑模式切换
 const isEditing = ref(false);
@@ -170,6 +186,32 @@ const openGrowthOverview = () => {
   router.push('/growth');
 };
 
+// --- 主题外观切换 ---
+const showThemeSheet = ref(false);
+const themeActions = [
+  { name: '浅色', value: 'light' as ThemeMode },
+  { name: '深色', value: 'dark' as ThemeMode },
+  { name: '跟随系统', value: 'auto' as ThemeMode }
+];
+
+/** 快捷操作里的主题外观文案，用于显示当前模式。 */
+const themeModeText = computed(() => {
+  const map: Record<ThemeMode, string> = { light: '浅色', dark: '深色', auto: '跟随系统' };
+  return map[themeStore.mode];
+});
+
+/** 打开主题模式选择弹窗。 */
+const onToggleTheme = () => {
+  showThemeSheet.value = true;
+};
+
+/** 选中新的主题模式后立即生效并提示。 */
+const onThemeSelect = (item: { value: ThemeMode }) => {
+  themeStore.setMode(item.value);
+  showThemeSheet.value = false;
+  showToast('已切换外观');
+};
+
 onMounted(async () => {
   if (babyStore.currentBabyId) {
     await growthStore.loadLatest(babyStore.currentBabyId);
@@ -181,7 +223,7 @@ onMounted(async () => {
   <div
     class="min-h-[calc(100vh-56px)] overflow-hidden bg-[var(--bg-color)] pb-[calc(var(--van-tabbar-height)+env(safe-area-inset-bottom)+24px)]">
     <div
-      class="min-h-[calc(100vh-56px)] rounded-[10px] border border-[#E5E0DA] bg-[radial-gradient(circle_at_50%_5%,#FFF8EE_0%,#FAF5F0_42%,#F7EFE7_100%)] px-6 pt-5 pb-8">
+      class="min-h-[calc(100vh-56px)] rounded-[10px] border border-[var(--border-light)] bg-[var(--surface-profile)] px-6 pt-5 pb-8">
       <!-- 顶部导航栏 -->
       <header class="mb-8 flex h-10 items-center justify-between">
         <button class="btn-day-nav press h-8 w-8" @click="isEditing ? cancelEdit() : goBack()">
@@ -202,7 +244,7 @@ onMounted(async () => {
         <!-- Hero 区域 -->
         <div class="mb-7 flex flex-col items-center">
           <div
-            class="flex h-[92px] w-[92px] items-center justify-center overflow-hidden rounded-full border-[3px] border-white bg-[var(--formula-icon-bg)] shadow-[0_6px_18px_rgba(80,55,30,0.12)]">
+            class="flex h-[92px] w-[92px] items-center justify-center overflow-hidden rounded-full border-[3px] border-[var(--surface-card)] bg-[var(--formula-icon-bg)] shadow-[var(--card-shadow)]">
             <img v-if="babyStore.baby.avatarUrl" :src="babyStore.baby.avatarUrl" class="h-full w-full object-cover" />
             <Baby v-else :size="40" color="var(--brand-primary)" />
           </div>
@@ -223,7 +265,7 @@ onMounted(async () => {
 
         <!-- 成长数据概览入口 -->
         <button
-          class="press mb-7 flex w-full flex-col items-center rounded-[20px] bg-white px-4 py-6 text-center shadow-[var(--card-shadow)]"
+          class="press mb-7 flex w-full flex-col items-center rounded-[20px] bg-[var(--surface-card)] px-4 py-6 text-center shadow-[var(--card-shadow)]"
           @click="openGrowthOverview">
           <span class="text-[17px] font-bold text-[var(--text-primary)]">成长数据概览</span>
           <template v-if="growthStore.latest && growthStore.latest.totalRecords > 0">
@@ -244,27 +286,27 @@ onMounted(async () => {
         </button>
 
         <!-- 基本信息卡片 -->
-        <div class="mb-6 rounded-[20px] bg-white px-4 pb-3 pt-5 shadow-[var(--card-shadow)]">
+        <div class="mb-6 rounded-[20px] bg-[var(--surface-card)] px-4 pb-3 pt-5 shadow-[var(--card-shadow)]">
           <div class="mb-5 flex items-center gap-2">
             <span class="h-4 w-[3px] rounded-sm bg-[var(--brand-secondary)]" />
             <span class="text-[17px] font-bold text-[var(--text-primary)]">基础信息</span>
           </div>
-          <div class="flex justify-between border-b border-[#F5F5F5] py-3">
+          <div class="flex justify-between border-b border-[var(--divider-color)] py-3">
             <span class="text-[13px] text-[var(--text-tertiary)]">出生日期</span>
             <span class="text-[13px] text-[var(--text-primary)]">
               {{ formatBirthdayDisplay(babyStore.baby.birthday ?? undefined) }}
             </span>
           </div>
-          <div class="flex items-center justify-between border-b border-[#F5F5F5] py-3">
+          <div class="flex items-center justify-between border-b border-[var(--divider-color)] py-3">
             <span class="text-[13px] text-[var(--text-tertiary)]">性别</span>
             <span class="flex items-center gap-1.5 text-[13px] text-[var(--text-primary)]">
               <span
                 class="inline-block h-2 w-2 rounded-full"
-                :class="babyStore.baby.gender === 'male' ? 'bg-[#1565C0]' : 'bg-[#C62828]'" />
+                :class="babyStore.baby.gender === 'male' ? 'bg-[var(--male-color)]' : 'bg-[var(--female-color)]'" />
               {{ genderText }}
             </span>
           </div>
-          <div class="flex justify-between border-b border-[#F5F5F5] py-3">
+          <div class="flex justify-between border-b border-[var(--divider-color)] py-3">
             <span class="text-[13px] text-[var(--text-tertiary)]">出生体重</span>
             <span
               :class="
@@ -275,7 +317,7 @@ onMounted(async () => {
               {{ babyStore.baby.birthWeight ? `${babyStore.baby.birthWeight} kg` : '未填写' }}
             </span>
           </div>
-          <div class="flex justify-between border-b border-[#F5F5F5] py-3">
+          <div class="flex justify-between border-b border-[var(--divider-color)] py-3">
             <span class="text-[13px] text-[var(--text-tertiary)]">出生身高</span>
             <span
               :class="
@@ -302,14 +344,14 @@ onMounted(async () => {
         </div>
 
         <!-- 快捷操作卡片 -->
-        <div class="rounded-[20px] bg-white p-4 shadow-[var(--card-shadow)]">
+        <div class="rounded-[20px] bg-[var(--surface-card)] p-4 shadow-[var(--card-shadow)]">
           <div class="mb-4 flex items-center gap-2">
             <span class="h-3.5 w-[3px] rounded-sm bg-[var(--brand-secondary)]" />
             <span class="text-[15px] font-semibold text-[var(--text-primary)]">快捷操作</span>
           </div>
           <div
             v-if="canEditProfile"
-            class="flex cursor-pointer items-center justify-between border-b border-[#F5F5F5] py-3.5 press"
+            class="flex cursor-pointer items-center justify-between border-b border-[var(--divider-color)] py-3.5 press"
             @click="enterEdit">
             <span class="flex items-center gap-2.5 text-[15px] text-[var(--text-primary)]">
               <Pencil :size="20" color="var(--brand-primary)" />
@@ -318,7 +360,7 @@ onMounted(async () => {
             <ChevronRight :size="16" color="var(--text-disabled)" />
           </div>
           <div
-            class="flex cursor-pointer items-center justify-between border-b border-[#F5F5F5] py-3.5 press"
+            class="flex cursor-pointer items-center justify-between border-b border-[var(--divider-color)] py-3.5 press"
             @click="router.push('/family')">
             <span class="flex items-center gap-2.5 text-[15px] text-[var(--text-primary)]">
               <Users :size="20" color="var(--brand-primary)" />
@@ -326,6 +368,18 @@ onMounted(async () => {
             </span>
             <span class="flex items-center gap-2">
               <span class="text-xs text-[var(--text-tertiary)]">查看</span>
+              <ChevronRight :size="16" color="var(--text-disabled)" />
+            </span>
+          </div>
+          <div
+            class="flex cursor-pointer items-center justify-between border-b border-[var(--divider-color)] py-3.5 press"
+            @click="onToggleTheme">
+            <span class="flex items-center gap-2.5 text-[15px] text-[var(--text-primary)]">
+              <component :is="themeStore.isDark ? Sun : Moon" :size="20" color="var(--brand-primary)" />
+              主题外观
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="text-xs text-[var(--text-tertiary)]">{{ themeModeText }}</span>
               <ChevronRight :size="16" color="var(--text-disabled)" />
             </span>
           </div>
@@ -347,7 +401,7 @@ onMounted(async () => {
         <!-- 头像编辑 -->
         <div class="mb-6 flex flex-col items-center">
           <div
-            class="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border-[3px] border-white bg-[var(--formula-icon-bg)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+            class="relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border-[3px] border-[var(--surface-card)] bg-[var(--formula-icon-bg)] shadow-[var(--nav-shadow)]"
             @click="showAvatarSheet = true">
             <img v-if="editAvatarUrl" :src="editAvatarUrl" class="h-full w-full object-cover" />
             <Baby v-else :size="36" color="var(--brand-primary)" />
@@ -359,7 +413,7 @@ onMounted(async () => {
         </div>
 
         <!-- 编辑表单 -->
-        <div class="rounded-[var(--radius-large)] bg-white p-5 shadow-[var(--card-shadow)]">
+        <div class="rounded-[var(--radius-large)] bg-[var(--surface-card)] p-5 shadow-[var(--card-shadow)]">
           <div class="mb-5">
             <label class="mb-2 block text-[13px] text-[var(--text-tertiary)]">宝宝昵称</label>
             <input
@@ -383,8 +437,8 @@ onMounted(async () => {
                 class="flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 text-[15px] transition"
                 :class="
                   editGender === 'male'
-                    ? 'border-[#1565C0] bg-[#E3F2FD] text-[#1565C0]'
-                    : 'border-[#E0E0E0] bg-white text-[var(--text-secondary)]'
+                    ? 'border-[var(--male-color)] bg-[var(--male-bg)] text-[var(--male-color)]'
+                    : 'border-[var(--border-light)] bg-[var(--surface-card)] text-[var(--text-secondary)]'
                 "
                 @click="editGender = 'male'">
                 <Baby :size="18" />
@@ -394,8 +448,8 @@ onMounted(async () => {
                 class="flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 text-[15px] transition"
                 :class="
                   editGender === 'female'
-                    ? 'border-[#C62828] bg-[#FCE4EC] text-[#C62828]'
-                    : 'border-[#E0E0E0] bg-white text-[var(--text-secondary)]'
+                    ? 'border-[var(--female-color)] bg-[var(--female-bg)] text-[var(--female-color)]'
+                    : 'border-[var(--border-light)] bg-[var(--surface-card)] text-[var(--text-secondary)]'
                 "
                 @click="editGender = 'female'">
                 <Heart :size="18" />
@@ -484,6 +538,15 @@ onMounted(async () => {
         cancel-text="取消"
         close-on-click-action
         @select="onAvatarSelect" />
+
+      <!-- 主题外观选择 -->
+      <van-action-sheet
+        v-model:show="showThemeSheet"
+        :actions="themeActions"
+        cancel-text="取消"
+        close-on-click-action
+        title="选择外观"
+        @select="onThemeSelect" />
 
       <input ref="avatarInput" type="file" accept="image/*" class="hidden" @change="onAvatarChange" />
     </div>

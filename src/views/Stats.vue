@@ -313,7 +313,8 @@ onMounted(loadDailyStats);
 </script>
 
 <template>
-  <div class="flex h-[calc(100vh_-_var(--van-tabbar-height))] flex-col overflow-hidden bg-[var(--bg-color)] px-5 pt-5 pb-6">
+  <div
+    class="flex h-[calc(100vh_-_var(--van-tabbar-height))] flex-col overflow-hidden bg-[var(--bg-color)] px-5 pt-5 pb-6">
     <div class="mb-4 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <button class="btn-day-nav press" @click="prevDay">
@@ -457,8 +458,8 @@ onMounted(loadDailyStats);
                     class="inline-block rounded-lg px-2 py-0.5 text-[11px] font-medium"
                     :class="
                       record.recorder.userId === authStore.user?.id
-                        ? 'bg-[#FFEBD6] text-[#E65100]'
-                        : 'bg-[#F0F0F0] text-[#666666]'
+                        ? 'bg-[var(--formula-bg)] text-[var(--formula-color)]'
+                        : 'bg-[var(--surface-muted)] text-[var(--text-secondary)]'
                     ">
                     {{ record.recorder.nickname }}
                   </span>
@@ -523,7 +524,14 @@ onMounted(loadDailyStats);
         <template v-if="editingRecord?.event_type === '睡眠'">
           <div class="mb-5 flex flex-col items-center">
             <label class="mb-3 block text-sm text-[var(--text-tertiary)]">睡眠时长</label>
-            <van-stepper v-model="editDuration" :min="5" :max="720" :step="5" integer input-width="72px" button-size="32px" />
+            <van-stepper
+              v-model="editDuration"
+              :min="5"
+              :max="720"
+              :step="5"
+              integer
+              input-width="72px"
+              button-size="32px" />
             <span class="mt-2 text-xs text-[var(--text-tertiary)]">{{ formatDuration(editDuration) }}</span>
           </div>
           <div class="mb-5">

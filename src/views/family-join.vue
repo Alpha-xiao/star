@@ -19,7 +19,10 @@ const showJoinedDialog = ref(false);
 
 /** 邀请码只保留 6 位大写字母/数字，兼容用户粘贴带空格或小写的内容。 */
 const normalizeCode = () => {
-  code.value = code.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  code.value = code.value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 6);
 };
 
 /** 提交邀请码，加入成功后 Store 会刷新可访问宝宝并切换当前宝宝。 */
@@ -61,7 +64,7 @@ const submit = async () => {
       <p class="mt-2 text-sm leading-6 text-[var(--text-tertiary)]">即可一起记录宝宝的成长</p>
     </div>
 
-    <div class="mt-8 rounded-[var(--radius-large)] bg-white p-5 shadow-[var(--card-shadow)]">
+    <div class="mt-8 rounded-[var(--radius-large)] bg-[var(--surface-card)] p-5 shadow-[var(--card-shadow)]">
       <input
         v-model="code"
         class="h-14 w-full rounded-2xl bg-[var(--bg-color)] text-center font-mono text-2xl font-bold tracking-[8px] text-[var(--text-primary)] outline-none"
@@ -78,12 +81,15 @@ const submit = async () => {
     </div>
 
     <p class="mt-6 text-center text-xs leading-6 text-[var(--text-tertiary)]">
-      还没有邀请码？<br />让宝宝的家长在 App 中生成
+      还没有邀请码？
+      <br />
+      让宝宝的家长在 App 中生成
     </p>
 
     <van-dialog v-model:show="showJoinedDialog" :show-confirm-button="false" close-on-click-overlay>
       <div v-if="joinedBaby" class="p-6 text-center">
-        <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-[var(--formula-icon-bg)]">
+        <div
+          class="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-[var(--formula-icon-bg)]">
           <img v-if="joinedBaby.avatarUrl" :src="joinedBaby.avatarUrl" class="h-full w-full object-cover" />
           <Baby v-else :size="32" color="var(--brand-primary)" />
         </div>

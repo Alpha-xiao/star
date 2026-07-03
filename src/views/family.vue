@@ -37,9 +37,9 @@ const roleText = (role: string) => {
 const roleClass = (role: string) => {
   const map: Record<string, string> = {
     owner: 'bg-[var(--brand-light)] text-[var(--brand-primary)]',
-    admin: 'bg-[#E3F2FD] text-[#1565C0]',
-    member: 'bg-[#E8F5E9] text-[#2E7D32]',
-    viewer: 'bg-[#F5F5F5] text-[var(--text-tertiary)]'
+    admin: 'bg-[var(--male-bg)] text-[var(--male-color)]',
+    member: 'bg-[var(--growth-bg)] text-[var(--growth-color)]',
+    viewer: 'bg-[var(--surface-muted)] text-[var(--text-tertiary)]'
   };
   return map[role] || map.viewer;
 };
@@ -154,7 +154,9 @@ onMounted(loadData);
       </button>
     </header>
 
-    <section v-if="canManageFamily" class="mb-5 rounded-[var(--radius-large)] bg-white p-4 shadow-[var(--card-shadow)]">
+    <section
+      v-if="canManageFamily"
+      class="mb-5 rounded-[var(--radius-large)] bg-[var(--surface-card)] p-4 shadow-[var(--card-shadow)]">
       <div class="mb-4 flex items-center gap-2">
         <span class="h-3.5 w-[3px] rounded-sm bg-[var(--brand-secondary)]" />
         <span class="text-[15px] font-semibold text-[var(--text-primary)]">邀请家人</span>
@@ -185,23 +187,17 @@ onMounted(loadData);
             重新生成
           </button>
           <button
-            class="press rounded-xl bg-[#FFF1F0] py-2 text-sm font-semibold"
-            style="color: #c62828"
+            class="press rounded-xl bg-[var(--danger-bg)] py-2 text-sm font-semibold"
+            style="color: var(--danger-color)"
             @click="revokeCode">
             作废
           </button>
         </div>
       </template>
-      <button
-        v-else
-        class="btn-primary press"
-        :disabled="isInviteOperating"
-        @click="generateCode">
-        生成邀请码
-      </button>
+      <button v-else class="btn-primary press" :disabled="isInviteOperating" @click="generateCode">生成邀请码</button>
     </section>
 
-    <section class="rounded-[var(--radius-large)] bg-white p-4 shadow-[var(--card-shadow)]">
+    <section class="rounded-[var(--radius-large)] bg-[var(--surface-card)] p-4 shadow-[var(--card-shadow)]">
       <div class="mb-2 flex items-center gap-2">
         <span class="h-3.5 w-[3px] rounded-sm bg-[var(--brand-secondary)]" />
         <span class="text-[15px] font-semibold text-[var(--text-primary)]">
@@ -212,7 +208,7 @@ onMounted(loadData);
       <div
         v-for="member in familyStore.members"
         :key="member.id"
-        class="border-b border-[#F5F5F5] py-3 last:border-b-0">
+        class="border-b border-[var(--divider-color)] py-3 last:border-b-0">
         <div
           class="flex items-center justify-between"
           @click="
@@ -247,7 +243,7 @@ onMounted(loadData);
             {{ action.name }}
           </button>
           <button
-            class="press flex items-center gap-1 rounded-xl bg-[#FFF1F0] px-3 py-1.5 text-xs text-[#C62828]"
+            class="press flex items-center gap-1 rounded-xl bg-[var(--danger-bg)] px-3 py-1.5 text-xs text-[var(--danger-color)]"
             @click="removeMember(member)">
             <Trash2 :size="12" />
             移除
@@ -258,7 +254,7 @@ onMounted(loadData);
 
     <button
       v-if="canLeave"
-      class="press mt-5 h-12 w-full rounded-2xl bg-white text-sm font-semibold text-[#C62828] shadow-[var(--card-shadow)]"
+      class="press mt-5 h-12 w-full rounded-2xl bg-[var(--surface-card)] text-sm font-semibold text-[var(--danger-color)] shadow-[var(--card-shadow)]"
       @click="leaveFamily">
       退出家庭
     </button>

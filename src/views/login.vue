@@ -45,7 +45,7 @@ const onSubmit = async () => {
       <p class="mt-2 text-sm text-[var(--text-tertiary)]">登录后同步宝宝护理记录</p>
     </div>
 
-    <div class="rounded-[var(--radius-large)] bg-white p-5 shadow-[var(--card-shadow)]">
+    <div class="rounded-[var(--radius-large)] bg-[var(--surface-card)] p-5 shadow-[var(--card-shadow)]">
       <label class="mb-2 block text-sm text-[var(--text-tertiary)]">手机号</label>
       <div class="mb-5 flex h-11 items-center gap-2 border-b border-[var(--border-light)]">
         <Phone :size="18" color="var(--brand-primary)" />

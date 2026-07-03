@@ -37,7 +37,7 @@ const onSubmit = async () => {
       <p class="mt-2 text-sm text-[var(--text-tertiary)]">注册后即可创建宝宝档案</p>
     </div>
 
-    <div class="rounded-[var(--radius-large)] bg-white p-5 shadow-[var(--card-shadow)]">
+    <div class="rounded-[var(--radius-large)] bg-[var(--surface-card)] p-5 shadow-[var(--card-shadow)]">
       <label class="mb-2 block text-sm text-[var(--text-tertiary)]">昵称（选填）</label>
       <div class="mb-5 flex h-11 items-center gap-2 border-b border-[var(--border-light)]">
         <User :size="18" color="var(--brand-primary)" />
@@ -53,7 +53,11 @@ const onSubmit = async () => {
       <label class="mb-2 block text-sm text-[var(--text-tertiary)]">密码</label>
       <div class="flex h-11 items-center gap-2 border-b border-[var(--border-light)]">
         <Lock :size="18" color="var(--brand-primary)" />
-        <input v-model="password" type="password" class="flex-1 bg-transparent outline-none" placeholder="至少 6 位密码" />
+        <input
+          v-model="password"
+          type="password"
+          class="flex-1 bg-transparent outline-none"
+          placeholder="至少 6 位密码" />
       </div>
     </div>
 

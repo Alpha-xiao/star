@@ -2,7 +2,7 @@
   <div class="growth-page min-h-screen bg-[var(--bg-color)]">
     <!-- 导航栏 -->
     <div
-      class="sticky top-0 z-10 flex items-center justify-between bg-white/95 px-4 py-3 shadow-[0_1px_0_rgba(240,240,240,0.9)] backdrop-blur">
+      class="sticky top-0 z-10 flex items-center justify-between bg-[var(--surface-header)] px-4 py-3 shadow-[0_1px_0_var(--border-light)] backdrop-blur">
       <button @click="goBack" class="press flex h-9 w-9 items-center justify-center rounded-full">
         <ArrowLeft class="w-6 h-6 text-[var(--text-primary)]" />
       </button>
@@ -87,7 +87,7 @@
       </div>
 
       <!-- 图表区域 -->
-      <div v-else class="mb-4 rounded-[20px] bg-white p-4 shadow-[var(--card-shadow)]">
+      <div v-else class="mb-4 rounded-[20px] bg-[var(--surface-card)] p-4 shadow-[var(--card-shadow)]">
         <div class="mb-3 flex items-center justify-between">
           <span class="text-sm font-bold text-[var(--text-primary)]">{{ metricLabel }}趋势</span>
           <span
@@ -118,7 +118,7 @@
       <!-- 测量记录列表 -->
       <div
         v-if="growthStore.records.length > 0"
-        class="mb-4 overflow-hidden rounded-[20px] bg-white shadow-[var(--card-shadow)]">
+        class="mb-4 overflow-hidden rounded-[20px] bg-[var(--surface-card)] shadow-[var(--card-shadow)]">
         <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
           <h2 class="font-bold text-[var(--text-primary)]">历史记录</h2>
           <span class="text-xs text-[var(--text-tertiary)]">{{ growthStore.records.length }} 条</span>
@@ -168,7 +168,7 @@
       <!-- 测量小贴士 -->
       <div class="growth-tip-card">
         <div class="flex items-center gap-2 mb-2">
-          <div class="flex h-6 w-6 items-center justify-center rounded-full bg-white/75">
+          <div class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--surface-card)]/75">
             <Info class="w-4 h-4 text-[var(--growth-color)]" />
           </div>
           <span class="text-sm font-bold text-[var(--growth-color)]">测量小贴士</span>
@@ -196,7 +196,7 @@
         <div class="mb-4">
           <label class="mb-2 block text-sm font-semibold text-[var(--text-secondary)]">测量日期</label>
           <button
-            class="press flex h-12 w-full items-center justify-between rounded-2xl border border-[var(--border-light)] bg-[var(--surface-pressed)] px-4 text-left shadow-[inset_0_0_0_1px_rgba(255,255,255,0.75)] transition focus:border-[var(--brand-secondary)] focus:bg-white focus:outline-none"
+            class="press theme-field-box flex h-12 w-full items-center justify-between px-4 text-left focus:outline-none"
             @click="openDatePicker">
             <span class="text-[15px] font-medium text-[var(--text-primary)]">选择日期</span>
             <span class="flex items-center gap-2 text-[15px] text-[var(--text-tertiary)]">
@@ -209,8 +209,7 @@
         <!-- 体重 -->
         <div class="mb-4">
           <label class="mb-2 block text-sm font-semibold text-[var(--text-secondary)]">体重 (kg)</label>
-          <div
-            class="flex h-12 items-center rounded-2xl border border-[var(--border-light)] bg-[var(--surface-pressed)] px-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.75)] transition focus-within:border-[var(--brand-secondary)] focus-within:bg-white">
+          <div class="theme-field-box flex h-12 items-center px-4">
             <input
               :value="normalizeNumberInput(formData.weight)"
               @input="formData.weight = normalizeNumberValue(($event.target as HTMLInputElement).value)"
@@ -225,8 +224,7 @@
         <!-- 身高 -->
         <div class="mb-4">
           <label class="mb-2 block text-sm font-semibold text-[var(--text-secondary)]">身高 (cm)</label>
-          <div
-            class="flex h-12 items-center rounded-2xl border border-[var(--border-light)] bg-[var(--surface-pressed)] px-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.75)] transition focus-within:border-[var(--brand-secondary)] focus-within:bg-white">
+          <div class="theme-field-box flex h-12 items-center px-4">
             <input
               :value="normalizeNumberInput(formData.height)"
               @input="formData.height = normalizeNumberValue(($event.target as HTMLInputElement).value)"
@@ -241,8 +239,7 @@
         <!-- 头围 -->
         <div class="mb-4">
           <label class="mb-2 block text-sm font-semibold text-[var(--text-secondary)]">头围 (cm)</label>
-          <div
-            class="flex h-12 items-center rounded-2xl border border-[var(--border-light)] bg-[var(--surface-pressed)] px-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.75)] transition focus-within:border-[var(--brand-secondary)] focus-within:bg-white">
+          <div class="theme-field-box flex h-12 items-center px-4">
             <input
               :value="normalizeNumberInput(formData.headCircumference)"
               @input="updateNumberField('headCircumference', $event)"
@@ -257,8 +254,7 @@
         <!-- 备注 -->
         <div class="mb-6">
           <label class="mb-2 block text-sm font-semibold text-[var(--text-secondary)]">备注</label>
-          <div
-            class="rounded-2xl border border-[var(--border-light)] bg-[var(--surface-pressed)] px-4 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.75)] transition focus-within:border-[var(--brand-secondary)] focus-within:bg-white">
+          <div class="theme-field-box px-4 py-3">
             <textarea
               v-model="formData.note"
               maxlength="200"

@@ -119,7 +119,7 @@ const onSubmit = async () => {
     </div>
 
     <!-- 表单卡片 -->
-    <div class="mb-6 rounded-[var(--radius-large)] bg-white p-5 shadow-[var(--card-shadow)]">
+    <div class="mb-6 rounded-[var(--radius-large)] bg-[var(--surface-card)] p-5 shadow-[var(--card-shadow)]">
       <!-- 宝宝昵称 -->
       <div class="mb-5">
         <label class="mb-2 block text-[13px] text-[var(--text-tertiary)]">宝宝昵称</label>
@@ -154,8 +154,8 @@ const onSubmit = async () => {
             class="flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 text-[15px] transition"
             :class="
               gender === 'male'
-                ? 'border-[#1565C0] bg-[#E3F2FD] text-[#1565C0]'
-                : 'border-[#E0E0E0] bg-white text-[var(--text-secondary)]'
+                ? 'border-[var(--male-color)] bg-[var(--male-bg)] text-[var(--male-color)]'
+                : 'border-[var(--border-light)] bg-[var(--surface-card)] text-[var(--text-secondary)]'
             "
             @click="gender = 'male'">
             <Baby :size="18" />
@@ -165,8 +165,8 @@ const onSubmit = async () => {
             class="flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 text-[15px] transition"
             :class="
               gender === 'female'
-                ? 'border-[#C62828] bg-[#FCE4EC] text-[#C62828]'
-                : 'border-[#E0E0E0] bg-white text-[var(--text-secondary)]'
+                ? 'border-[var(--female-color)] bg-[var(--female-bg)] text-[var(--female-color)]'
+                : 'border-[var(--border-light)] bg-[var(--surface-card)] text-[var(--text-secondary)]'
             "
             @click="gender = 'female'">
             <Heart :size="18" />
@@ -213,9 +213,7 @@ const onSubmit = async () => {
     </div>
 
     <!-- 提交按钮 -->
-    <button class="btn-primary mb-4 press" :disabled="!canSubmit || isSubmitting" @click="onSubmit">
-      开始记录
-    </button>
+    <button class="btn-primary mb-4 press" :disabled="!canSubmit || isSubmitting" @click="onSubmit">开始记录</button>
 
     <!-- 底部引导文案 -->
     <p class="text-center text-xs text-[var(--text-disabled)]">创建后即可开始记录宝宝的每一天</p>

@@ -267,7 +267,7 @@ onUnmounted(() => {
         </div>
         <button
           v-if="babyStore.accessibleBabies.length > 1"
-          class="press flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--card-shadow)]"
+          class="press flex items-center gap-1 rounded-full bg-[var(--surface-card)] px-3 py-1.5 text-sm font-semibold text-[var(--text-primary)] shadow-[var(--card-shadow)]"
           @click="showBabySwitcher = true">
           {{ babyStore.baby?.name || '选择宝宝' }}
           <ChevronDown :size="14" color="var(--text-tertiary)" />
@@ -313,7 +313,7 @@ onUnmounted(() => {
           </button>
           <button
             v-else
-            class="press flex h-[clamp(38px,6vh,48px)] flex-1 items-center justify-center rounded-[14px] border-2 border-[#e53935] bg-white/10 text-base font-bold text-[#ffebee]"
+            class="press flex h-[clamp(38px,6vh,48px)] flex-1 items-center justify-center rounded-[14px] border-2 border-[var(--danger-strong)] bg-white/10 text-base font-bold text-[#ffebee]"
             :class="{ 'opacity-50': !babyStore.canRecord }"
             @click="endSleep">
             结束睡眠
@@ -385,7 +385,7 @@ onUnmounted(() => {
         <button
           v-for="item in babyStore.accessibleBabies"
           :key="item.id"
-          class="press flex w-full items-center justify-between border-b border-[#F5F5F5] py-3 last:border-b-0"
+          class="press flex w-full items-center justify-between border-b border-[var(--divider-color)] py-3 last:border-b-0"
           @click="switchBaby(item.id)">
           <span class="flex items-center gap-3">
             <span
