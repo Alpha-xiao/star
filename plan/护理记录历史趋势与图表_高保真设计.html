@@ -1,0 +1,1761 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BabyStar · 护理记录历史趋势 高保真设计稿</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+      :root {
+        --brand-primary: #e65100;
+        --brand-secondary: #ff9a56;
+        --brand-light: #fff3e0;
+        --bg-color: #faf5f0;
+        --surface: #ffffff;
+        --surface-pressed: #fff8f0;
+        --text-primary: #2d2d2d;
+        --text-secondary: #666666;
+        --text-tertiary: #999999;
+        --text-disabled: #cccccc;
+        --border-light: #f0f0f0;
+        --formula-color: #e65100;
+        --formula-bg: #ffead6;
+        --breast-color: #c62828;
+        --breast-bg: #ffe3ec;
+        --urine-color: #1565c0;
+        --urine-bg: #dff0ff;
+        --stool-color: #5d4037;
+        --stool-bg: #e2cdb8;
+        --sleep-color: #5e35b1;
+        --sleep-bg: #ede7f6;
+        --card-shadow: 0 6px 18px rgba(80, 55, 30, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        color: var(--text-primary);
+      }
+      body {
+        background: linear-gradient(135deg, #f5ede1 0%, #fdf4e7 100%);
+        min-height: 100vh;
+        padding: 40px 24px 80px;
+      }
+
+      .page-title {
+        max-width: 1600px;
+        margin: 0 auto 24px;
+      }
+      .page-title h1 {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+      .page-title p {
+        margin-top: 6px;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .grid {
+        max-width: 1600px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(390px, 1fr));
+        gap: 28px;
+        justify-items: center;
+      }
+
+      .screen {
+        width: 390px;
+        background: var(--bg-color);
+        border-radius: 36px;
+        box-shadow:
+          0 30px 60px -20px rgba(80, 55, 30, 0.25),
+          0 8px 24px rgba(80, 55, 30, 0.1);
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .screen-caption {
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-tertiary);
+        padding: 12px 0 4px;
+      }
+
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px 6px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .status-bar .icons {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+
+      .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 20px 16px;
+      }
+      .navbar h1 {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface);
+        border-radius: 50%;
+        box-shadow: var(--card-shadow);
+      }
+      .icon-btn svg {
+        width: 18px;
+        height: 18px;
+        color: var(--text-primary);
+      }
+
+      .view-tabs {
+        display: flex;
+        background: var(--surface);
+        border-radius: 999px;
+        padding: 4px;
+        margin: 0 20px 16px;
+        box-shadow: var(--card-shadow);
+      }
+      .view-tabs button {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        padding: 9px 0;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .view-tabs button.active {
+        background: var(--brand-primary);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(230, 81, 0, 0.28);
+      }
+
+      .date-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px 12px;
+      }
+      .date-nav .arrow {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface);
+        border-radius: 50%;
+        box-shadow: var(--card-shadow);
+      }
+      .date-nav .arrow svg {
+        width: 16px;
+        height: 16px;
+      }
+      .date-nav .range {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .date-nav .range .primary {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .date-nav .range .secondary {
+        margin-top: 2px;
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+      .date-nav .today-btn {
+        padding: 5px 10px;
+        border-radius: 10px;
+        background: var(--brand-light);
+        color: var(--brand-primary);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 16px;
+        margin: 0 20px 14px;
+        box-shadow: var(--card-shadow);
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .card-header .title {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .card-header .subtitle {
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+      .card-header .badge {
+        padding: 3px 8px;
+        border-radius: 10px;
+        background: var(--brand-light);
+        color: var(--brand-primary);
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .summary-card {
+        background: linear-gradient(135deg, #ffab40 0%, #e65100 100%);
+        color: #fff;
+        margin: 0 20px 14px;
+        padding: 18px 18px 16px;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+      }
+      .summary-card .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .summary-card .head .label {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+      .summary-card .head .range {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .summary-card .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .summary-card .kpi .num {
+        display: flex;
+        align-items: baseline;
+        gap: 3px;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .summary-card .kpi .unit {
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0.9;
+      }
+      .summary-card .kpi .name {
+        margin-top: 3px;
+        font-size: 11px;
+        opacity: 0.9;
+      }
+      .summary-card .kpi .trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        margin-top: 4px;
+        padding: 2px 6px;
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .summary-card .kpi .trend.down {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .summary-card .kpi .trend svg {
+        width: 10px;
+        height: 10px;
+      }
+
+      .kpi-tiles {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin: 0 20px 14px;
+      }
+      .tile {
+        background: var(--surface);
+        border-radius: 18px;
+        padding: 14px;
+        box-shadow: var(--card-shadow);
+      }
+      .tile .head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .tile .head .icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+      }
+      .tile .head svg {
+        width: 16px;
+        height: 16px;
+      }
+      .tile .name {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+      .tile .num {
+        display: flex;
+        align-items: baseline;
+        gap: 3px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .tile .unit {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        font-weight: 500;
+      }
+      .tile .compare {
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+      .tile .compare .up {
+        color: #2e7d32;
+        font-weight: 600;
+      }
+      .tile .compare .down {
+        color: var(--brand-primary);
+        font-weight: 600;
+      }
+
+      .chart {
+        height: 200px;
+        width: 100%;
+      }
+      .chart-lg {
+        height: 220px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--border-light);
+      }
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: var(--text-secondary);
+      }
+      .legend .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .segment {
+        display: flex;
+        gap: 6px;
+        margin: 0 20px 14px;
+      }
+      .segment button {
+        flex: 1;
+        padding: 8px 0;
+        background: var(--surface);
+        border: 0;
+        border-radius: 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        box-shadow: var(--card-shadow);
+      }
+      .segment button.active {
+        background: var(--brand-primary);
+        color: #fff;
+      }
+
+      .month-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        margin-top: 8px;
+      }
+      .month-grid .weekday {
+        text-align: center;
+        font-size: 10px;
+        color: var(--text-tertiary);
+        padding: 2px 0;
+      }
+      .month-grid .cell {
+        aspect-ratio: 1;
+        border-radius: 6px;
+        background: var(--surface-pressed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: var(--text-secondary);
+        position: relative;
+      }
+      .month-grid .cell.today {
+        outline: 1.5px solid var(--brand-primary);
+      }
+      .month-grid .cell.mute {
+        color: var(--text-disabled);
+        background: transparent;
+      }
+      .month-grid .cell .val {
+        position: absolute;
+        bottom: 2px;
+        right: 3px;
+        font-size: 8px;
+        color: var(--text-tertiary);
+      }
+      .heat-1 {
+        background: #ffe9ce;
+      }
+      .heat-2 {
+        background: #ffcf95;
+      }
+      .heat-3 {
+        background: #ffa966;
+      }
+      .heat-4 {
+        background: #e65100;
+        color: #fff;
+      }
+
+      .tabbar {
+        margin-top: auto;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background: var(--surface);
+        padding: 10px 0 22px;
+        border-top: 1px solid var(--border-light);
+      }
+      .tabbar .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+      .tabbar .item.active {
+        color: var(--brand-primary);
+        font-weight: 600;
+      }
+      .tabbar .item svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .insight-card {
+        margin: 0 20px 14px;
+        background: linear-gradient(135deg, #fff3e0 0%, #ffefd5 100%);
+        border: 1px solid #ffd7a8;
+        border-radius: 18px;
+        padding: 14px;
+        display: flex;
+        gap: 12px;
+      }
+      .insight-card .badge-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--brand-primary);
+        color: #fff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .insight-card .badge-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .insight-card .title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--brand-primary);
+      }
+      .insight-card ul {
+        margin-top: 6px;
+        padding-left: 14px;
+      }
+      .insight-card li {
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .empty {
+        margin: 40px 20px;
+        padding: 40px 20px;
+        background: var(--surface);
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        text-align: center;
+      }
+      .empty .icon-wrap {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        background: var(--brand-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .empty .icon-wrap svg {
+        width: 34px;
+        height: 34px;
+        color: var(--brand-primary);
+      }
+      .empty .title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .empty .desc {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+      .empty .cta {
+        margin-top: 18px;
+        display: inline-block;
+        padding: 10px 22px;
+        background: var(--brand-primary);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(230, 81, 0, 0.28);
+      }
+
+      .share-row {
+        display: flex;
+        gap: 10px;
+        margin: 4px 20px 14px;
+      }
+      .share-row button {
+        flex: 1;
+        padding: 12px 0;
+        background: var(--surface);
+        border: 0;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-shadow: var(--card-shadow);
+      }
+      .share-row button.primary {
+        background: var(--brand-primary);
+        color: #fff;
+      }
+      .share-row button svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .detail-list {
+        margin: 0 20px 14px;
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 14px 16px;
+        box-shadow: var(--card-shadow);
+      }
+      .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--border-light);
+      }
+      .detail-item:last-child {
+        border-bottom: 0;
+      }
+      .detail-item .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .detail-item .name {
+        flex: 1;
+        font-size: 12px;
+      }
+      .detail-item .value {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+
+      .notes {
+        max-width: 1600px;
+        margin: 48px auto 0;
+        background: #fff;
+        border-radius: 24px;
+        padding: 32px 40px;
+        box-shadow: var(--card-shadow);
+      }
+      .notes h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+        color: var(--brand-primary);
+      }
+      .notes h3 {
+        font-size: 14px;
+        margin: 18px 0 8px;
+      }
+      .notes p,
+      .notes li {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+      .notes ul {
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-title">
+      <h1>护理记录 · 历史趋势与图表（高保真设计稿）</h1>
+      <p>
+        对应《项目完整性分析报告》3.1.1；覆盖：日/周/月
+        视图切换、周报摘要、奶量·母乳·睡眠趋势、排泄柱状、月视图热力图、洞察卡、空状态与导出分享。
+      </p>
+    </div>
+
+    <div class="grid">
+      <!-- 屏 1：周视图 -->
+      <div>
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="icons">
+              <span>信号</span>
+              <span>WiFi</span>
+              <span>92%</span>
+            </div>
+          </div>
+
+          <div class="navbar">
+            <div class="icon-btn">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <h1>统计</h1>
+            <div class="icon-btn">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="view-tabs">
+            <button>日</button>
+            <button class="active">周</button>
+            <button>月</button>
+          </div>
+
+          <div class="date-nav">
+            <div class="arrow">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="range">
+              <div class="primary">6月26日 - 7月2日</div>
+              <div class="secondary">本周 · 第 27 周</div>
+            </div>
+            <div class="arrow">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="summary-card">
+            <div class="head">
+              <span class="label">本周摘要</span>
+              <span class="range">6/26 - 7/2</span>
+            </div>
+            <div class="kpi-grid">
+              <div class="kpi">
+                <div class="num">
+                  4620
+                  <span class="unit">ml</span>
+                </div>
+                <div class="name">总奶量</div>
+                <span class="trend">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                    <path d="M7 14l5-5 5 5" />
+                  </svg>
+                  +8.2%
+                </span>
+              </div>
+              <div class="kpi">
+                <div class="num">
+                  54.6
+                  <span class="unit">h</span>
+                </div>
+                <div class="name">睡眠时长</div>
+                <span class="trend">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                    <path d="M7 14l5-5 5 5" />
+                  </svg>
+                  +3.1%
+                </span>
+              </div>
+              <div class="kpi">
+                <div class="num">
+                  42
+                  <span class="unit">次</span>
+                </div>
+                <div class="name">排泄次数</div>
+                <span class="trend down">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                    <path d="M17 10l-5 5-5-5" />
+                  </svg>
+                  -4.5%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-tiles">
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--formula-bg); color: var(--formula-color)">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M8 2h8M9 2v3a3 3 0 006 0V2M6 22h12l-1-13H7L6 22z" />
+                  </svg>
+                </div>
+                <span class="name">日均奶量</span>
+              </div>
+              <div class="num">
+                660
+                <span class="unit">ml/日</span>
+              </div>
+              <div class="compare">
+                较上周
+                <span class="up">↑ 50 ml</span>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--breast-bg); color: var(--breast-color)">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 21s-7-4.5-7-11a4 4 0 017-2.7A4 4 0 0119 10c0 6.5-7 11-7 11z" />
+                  </svg>
+                </div>
+                <span class="name">母乳时长</span>
+              </div>
+              <div class="num">
+                32
+                <span class="unit">min/日</span>
+              </div>
+              <div class="compare">
+                较上周
+                <span class="down">↓ 3 min</span>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--sleep-bg); color: var(--sleep-color)">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
+                  </svg>
+                </div>
+                <span class="name">日均睡眠</span>
+              </div>
+              <div class="num">
+                15.6
+                <span class="unit">h/日</span>
+              </div>
+              <div class="compare">
+                较上周
+                <span class="up">↑ 0.5 h</span>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--urine-bg); color: var(--urine-color)">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+                </div>
+                <span class="name">日均喂奶</span>
+              </div>
+              <div class="num">
+                7.4
+                <span class="unit">次/日</span>
+              </div>
+              <div class="compare">间隔 3h 15min</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="title">奶量趋势</span>
+              <span class="badge">周</span>
+            </div>
+            <div id="chart-milk" class="chart chart-lg"></div>
+            <div class="legend">
+              <span>
+                <i class="dot" style="background: var(--formula-color)"></i>
+                奶粉 ml
+              </span>
+              <span>
+                <i class="dot" style="background: var(--breast-color)"></i>
+                母乳 min
+              </span>
+              <span>
+                <i class="dot" style="background: var(--text-tertiary); opacity: 0.5"></i>
+                上周奶粉
+              </span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="title">排泄次数</span>
+              <span class="subtitle">拉尿 vs 拉屎</span>
+            </div>
+            <div id="chart-poop" class="chart"></div>
+            <div class="legend">
+              <span>
+                <i class="dot" style="background: var(--urine-color)"></i>
+                拉尿
+              </span>
+              <span>
+                <i class="dot" style="background: var(--stool-color)"></i>
+                拉屎
+              </span>
+            </div>
+          </div>
+
+          <div class="insight-card">
+            <div class="badge-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7c.9.7 1.5 1.5 1.5 2.3H14.5c0-.8.6-1.6 1.5-2.3A7 7 0 0012 2z" />
+              </svg>
+            </div>
+            <div>
+              <div class="title">本周洞察</div>
+              <ul>
+                <li>奶量平稳上升，符合月龄参考区间</li>
+                <li>周三夜奶次数较多（3 次），建议关注</li>
+                <li>白天睡眠占比 42%，作息接近规律</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="tabbar">
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M3 12l9-9 9 9M5 10v10h14V10" />
+              </svg>
+              <span>记录</span>
+            </div>
+            <div class="item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+              </svg>
+              <span>统计</span>
+            </div>
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 22a8 8 0 0116 0" />
+              </svg>
+              <span>档案</span>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">屏 1 · 周视图（默认核心）</div>
+      </div>
+
+      <!-- 屏 2：月视图 -->
+      <div>
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="icons">
+              <span>信号</span>
+              <span>WiFi</span>
+              <span>92%</span>
+            </div>
+          </div>
+
+          <div class="navbar">
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <h1>统计</h1>
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 12h16M4 6h16M4 18h10" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="view-tabs">
+            <button>日</button>
+            <button>周</button>
+            <button class="active">月</button>
+          </div>
+
+          <div class="date-nav">
+            <div class="arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="range">
+              <div class="primary">2026 年 7 月</div>
+              <div class="secondary">已记录 31 天中的 2 天</div>
+            </div>
+            <div class="arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="segment">
+            <button class="active">奶量</button>
+            <button>母乳</button>
+            <button>睡眠</button>
+            <button>排泄</button>
+          </div>
+
+          <div class="summary-card">
+            <div class="head">
+              <span class="label">7 月奶量摘要</span>
+              <span class="range">2 / 31 天</span>
+            </div>
+            <div class="kpi-grid">
+              <div class="kpi">
+                <div class="num">
+                  1240
+                  <span class="unit">ml</span>
+                </div>
+                <div class="name">总奶量</div>
+              </div>
+              <div class="kpi">
+                <div class="num">
+                  620
+                  <span class="unit">ml</span>
+                </div>
+                <div class="name">日均</div>
+              </div>
+              <div class="kpi">
+                <div class="num">
+                  760
+                  <span class="unit">ml</span>
+                </div>
+                <div class="name">单日峰值</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="title">奶量热力</span>
+              <span class="subtitle">颜色越深奶量越多</span>
+            </div>
+            <div class="month-grid">
+              <div class="weekday">一</div>
+              <div class="weekday">二</div>
+              <div class="weekday">三</div>
+              <div class="weekday">四</div>
+              <div class="weekday">五</div>
+              <div class="weekday">六</div>
+              <div class="weekday">日</div>
+              <div class="cell mute"></div>
+              <div class="cell mute"></div>
+              <div class="cell mute"></div>
+              <div class="cell heat-3">
+                1
+                <span class="val">720</span>
+              </div>
+              <div class="cell today heat-2">
+                2
+                <span class="val">520</span>
+              </div>
+              <div class="cell">3</div>
+              <div class="cell">4</div>
+              <div class="cell">5</div>
+              <div class="cell">6</div>
+              <div class="cell">7</div>
+              <div class="cell">8</div>
+              <div class="cell">9</div>
+              <div class="cell">10</div>
+              <div class="cell">11</div>
+              <div class="cell">12</div>
+              <div class="cell">13</div>
+              <div class="cell">14</div>
+              <div class="cell">15</div>
+              <div class="cell">16</div>
+              <div class="cell">17</div>
+              <div class="cell">18</div>
+              <div class="cell">19</div>
+              <div class="cell">20</div>
+              <div class="cell">21</div>
+              <div class="cell">22</div>
+              <div class="cell">23</div>
+              <div class="cell">24</div>
+              <div class="cell">25</div>
+              <div class="cell">26</div>
+              <div class="cell">27</div>
+              <div class="cell">28</div>
+              <div class="cell">29</div>
+              <div class="cell">30</div>
+              <div class="cell">31</div>
+              <div class="cell mute"></div>
+            </div>
+            <div class="legend">
+              <span>
+                <i class="dot heat-1"></i>
+                低
+              </span>
+              <span>
+                <i class="dot heat-2"></i>
+                中低
+              </span>
+              <span>
+                <i class="dot heat-3"></i>
+                中高
+              </span>
+              <span>
+                <i class="dot heat-4"></i>
+                高
+              </span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="title">近 30 天趋势</span>
+              <span class="subtitle">7 日移动平均</span>
+            </div>
+            <div id="chart-month" class="chart chart-lg"></div>
+          </div>
+
+          <div class="tabbar">
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M3 12l9-9 9 9M5 10v10h14V10" />
+              </svg>
+              <span>记录</span>
+            </div>
+            <div class="item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+              </svg>
+              <span>统计</span>
+            </div>
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 22a8 8 0 0116 0" />
+              </svg>
+              <span>档案</span>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">屏 2 · 月视图（含热力图）</div>
+      </div>
+
+      <!-- 屏 3：睡眠专项 -->
+      <div>
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="icons">
+              <span>信号</span>
+              <span>WiFi</span>
+              <span>92%</span>
+            </div>
+          </div>
+
+          <div class="navbar">
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <h1>睡眠趋势</h1>
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v14" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="view-tabs">
+            <button>日</button>
+            <button class="active">周</button>
+            <button>月</button>
+          </div>
+
+          <div class="date-nav">
+            <div class="arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="range">
+              <div class="primary">6月26日 - 7月2日</div>
+              <div class="secondary">白天 42% · 夜间 58%</div>
+            </div>
+            <div class="today-btn">今天</div>
+          </div>
+
+          <div class="kpi-tiles">
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--sleep-bg); color: var(--sleep-color)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
+                  </svg>
+                </div>
+                <span class="name">日均总时长</span>
+              </div>
+              <div class="num">
+                15.6
+                <span class="unit">h</span>
+              </div>
+              <div class="compare">
+                较上周
+                <span class="up">↑ 0.5 h</span>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--sleep-bg); color: var(--sleep-color)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M12 8v4l3 3" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                </div>
+                <span class="name">单次时长</span>
+              </div>
+              <div class="num">
+                1.8
+                <span class="unit">h</span>
+              </div>
+              <div class="compare">中位数 · 最长 3.2h</div>
+            </div>
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--sleep-bg); color: var(--sleep-color)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4" />
+                  </svg>
+                </div>
+                <span class="name">夜醒次数</span>
+              </div>
+              <div class="num">
+                2.4
+                <span class="unit">次/夜</span>
+              </div>
+              <div class="compare">
+                较上周
+                <span class="down">↓ 0.6</span>
+              </div>
+            </div>
+            <div class="tile">
+              <div class="head">
+                <div class="icon" style="background: var(--sleep-bg); color: var(--sleep-color)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M12 3v18M3 12h18" />
+                  </svg>
+                </div>
+                <span class="name">清醒窗口</span>
+              </div>
+              <div class="num">
+                68
+                <span class="unit">min</span>
+              </div>
+              <div class="compare">建议 45-90 分钟</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="title">近 7 日睡眠分布</span>
+              <span class="subtitle">深色 = 睡眠</span>
+            </div>
+            <div id="chart-sleep" class="chart chart-lg"></div>
+          </div>
+
+          <div class="share-row">
+            <button class="primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v14" />
+              </svg>
+              导出 CSV
+            </button>
+            <button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+              </svg>
+              分享长图
+            </button>
+          </div>
+
+          <div class="tabbar">
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M3 12l9-9 9 9M5 10v10h14V10" />
+              </svg>
+              <span>记录</span>
+            </div>
+            <div class="item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+              </svg>
+              <span>统计</span>
+            </div>
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 22a8 8 0 0116 0" />
+              </svg>
+              <span>档案</span>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">屏 3 · 睡眠专项趋势</div>
+      </div>
+
+      <!-- 屏 4：空状态 -->
+      <div>
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="icons">
+              <span>信号</span>
+              <span>WiFi</span>
+              <span>92%</span>
+            </div>
+          </div>
+
+          <div class="navbar">
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <h1>统计</h1>
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path
+                  d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="view-tabs">
+            <button>日</button>
+            <button class="active">周</button>
+            <button>月</button>
+          </div>
+
+          <div class="date-nav">
+            <div class="arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </div>
+            <div class="range">
+              <div class="primary">6月26日 - 7月2日</div>
+              <div class="secondary">本周暂无足够数据</div>
+            </div>
+            <div class="today-btn">今天</div>
+          </div>
+
+          <div class="empty">
+            <div class="icon-wrap">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+              </svg>
+            </div>
+            <div class="title">本周还没有足够数据</div>
+            <div class="desc">
+              趋势图表需要连续记录 3 天以上
+              <br />
+              坚持记录，就能看到宝宝的成长节奏
+            </div>
+            <div class="cta">去记录一条</div>
+          </div>
+
+          <div class="insight-card">
+            <div class="badge-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 8v4M12 16h.01" />
+                <circle cx="12" cy="12" r="9" />
+              </svg>
+            </div>
+            <div>
+              <div class="title">数据小贴士</div>
+              <ul>
+                <li>每天至少记录 1 次奶量，即可生成日均趋势</li>
+                <li>连续 3 天有睡眠记录，即可看清醒窗口</li>
+                <li>周报会在每周日 21:00 自动生成</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="detail-list">
+            <div class="card-header" style="margin-bottom: 8px">
+              <span class="title">最近的记录</span>
+              <span class="subtitle">补录一下？</span>
+            </div>
+            <div class="detail-item">
+              <span class="dot" style="background: var(--formula-color)"></span>
+              <span class="name">奶粉</span>
+              <span class="value">昨天 20:14 · 120 ml</span>
+            </div>
+            <div class="detail-item">
+              <span class="dot" style="background: var(--sleep-color)"></span>
+              <span class="name">睡眠</span>
+              <span class="value">昨天 22:30 · 1h 40min</span>
+            </div>
+            <div class="detail-item">
+              <span class="dot" style="background: var(--urine-color)"></span>
+              <span class="name">拉尿</span>
+              <span class="value">今天 06:12 · 量多</span>
+            </div>
+          </div>
+
+          <div class="tabbar">
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M3 12l9-9 9 9M5 10v10h14V10" />
+              </svg>
+              <span>记录</span>
+            </div>
+            <div class="item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+              </svg>
+              <span>统计</span>
+            </div>
+            <div class="item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 22a8 8 0 0116 0" />
+              </svg>
+              <span>档案</span>
+            </div>
+          </div>
+        </div>
+        <div class="screen-caption">屏 4 · 数据不足空状态</div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h2>设计说明（3.1.1 历史趋势与图表）</h2>
+
+      <h3>1. 信息架构</h3>
+      <p>
+        统计页顶部新增「日 / 周 /
+        月」三段视图切换。默认进入周视图，因为周粒度最能回答父母最常问的问题：「这周比上周吃得多吗？睡得好吗？」
+      </p>
+      <ul>
+        <li>日视图 — 保留现有单日明细，用于回顾具体某天。</li>
+        <li>周视图 — 主推的趋势视角，含周报摘要 + 单指标折线/柱状图 + 洞察卡。</li>
+        <li>月视图 — 大周期回顾，采用「热力图 + 7 日移动平均」呈现宏观趋势。</li>
+      </ul>
+
+      <h3>2. 组件模块</h3>
+      <ul>
+        <li>
+          <b>周报摘要卡</b>
+          ：品牌橙渐变，突出总奶量、睡眠时长、排泄次数三项与上周环比，第一时间给出结论。
+        </li>
+        <li>
+          <b>KPI 磁贴</b>
+          ：日均奶量 / 母乳时长 / 日均睡眠 / 日均喂奶次数，配色沿用护理类型专属色，便于快速定位指标。
+        </li>
+        <li>
+          <b>趋势折线</b>
+          ：ECharts smooth line + AreaStyle，主线为本期，浅灰虚线为对比期（上周/上月），支持点击定位到当日。
+        </li>
+        <li>
+          <b>排泄柱状</b>
+          ：拉尿/拉屎双色堆叠柱状，视图内切换单指标下钻。
+        </li>
+        <li>
+          <b>月度热力图</b>
+          ：7×N 网格，颜色阶梯代表当日总量；点击某格进入日视图详情。
+        </li>
+        <li>
+          <b>洞察卡</b>
+          ：每周自动生成 3 条要点，覆盖趋势、异常、作息节律，弱化数据焦虑感。
+        </li>
+        <li>
+          <b>导出/分享</b>
+          ：接入 3.1.2 数据导出，趋势页顶层直达 CSV 与长图分享。
+        </li>
+      </ul>
+
+      <h3>3. 数据与接口</h3>
+      <ul>
+        <li>
+          复用后端已有
+          <code>GET /stats/range?from&to&babyId</code>
+          ，前端本地聚合为周/月序列。
+        </li>
+        <li>
+          新增前端 store
+          <code>useTrendStore</code>
+          ：缓存周/月序列，切换视图/日期区间时避免重复请求。
+        </li>
+        <li>热力图使用「日总量分级」，等级建议 5 档（0 / 低 / 中低 / 中高 / 高），阈值按最近 30 天分位数动态计算。</li>
+      </ul>
+
+      <h3>4. 交互与状态</h3>
+      <ul>
+        <li>顶部视图 Tab、日期导航、单指标切换三层组合，避免多层跳转。</li>
+        <li>图表滑动/长按显示 tooltip，同时高亮周报摘要中对应 KPI。</li>
+        <li>
+          数据不足（&lt; 3 天）显示空状态卡与「去记录一条」CTA，同时保留「最近的记录」引导补录，配合 3.2.2 记录回填。
+        </li>
+        <li>无网络时降级为本地缓存数据 + 顶部小提示，与离线暂存机制保持一致。</li>
+        <li>切换宝宝或角色变化时，趋势缓存需清空并重新拉取，避免跨宝宝串数据。</li>
+      </ul>
+
+      <h3>5. 视觉与主题</h3>
+      <ul>
+        <li>
+          沿用项目暖米色背景 (
+          <code>#FAF5F0</code>
+          ) + 品牌橙渐变 + 卡片 20px 圆角 + 卡片阴影
+          <code>0 6px 18px rgba(80,55,30,0.1)</code>
+          。
+        </li>
+        <li>护理类型专属色保持一致：奶粉橙、母乳粉红、拉尿蓝、拉屎棕、睡眠紫。</li>
+        <li>
+          深色模式下：卡片改为
+          <code>#1f1a15</code>
+          ，图表主色不变，网格线转为
+          <code>rgba(255,255,255,0.08)</code>
+          。
+        </li>
+      </ul>
+
+      <h3>6. 埋点与运营</h3>
+      <ul>
+        <li>
+          <code>trend_view_tab_click</code>
+          ：视图切换。
+        </li>
+        <li>
+          <code>trend_range_change</code>
+          ：日期区间切换（周/月/自定义）。
+        </li>
+        <li>
+          <code>trend_metric_switch</code>
+          ：指标切换（月视图）。
+        </li>
+        <li>
+          <code>trend_export_click</code>
+          ：导出/分享入口点击。
+        </li>
+        <li>
+          <code>trend_empty_cta_click</code>
+          ：空状态 CTA 点击。
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      const brandOrange = '#E65100';
+      const breastRed = '#C62828';
+      const urineBlue = '#1565C0';
+      const stoolBrown = '#5D4037';
+      const sleepPurple = '#5E35B1';
+      const textTertiary = '#999999';
+
+      function baseGrid() {
+        return { left: 8, right: 12, top: 20, bottom: 20, containLabel: true };
+      }
+      function baseAxis() {
+        return {
+          axisLine: { lineStyle: { color: '#EEE' } },
+          axisTick: { show: false },
+          axisLabel: { color: '#999', fontSize: 10 },
+          splitLine: { lineStyle: { color: '#F5F0EA', type: 'dashed' } }
+        };
+      }
+
+      function initMilk() {
+        const el = document.getElementById('chart-milk');
+        if (!el) return;
+        const chart = echarts.init(el);
+        const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+        chart.setOption({
+          grid: baseGrid(),
+          tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#F0E7DA', textStyle: { color: '#333' } },
+          legend: { show: false },
+          xAxis: { type: 'category', data: days, ...baseAxis() },
+          yAxis: { type: 'value', name: 'ml / min', nameTextStyle: { color: '#999', fontSize: 10 }, ...baseAxis() },
+          series: [
+            {
+              name: '奶粉',
+              type: 'line',
+              smooth: true,
+              data: [640, 680, 720, 660, 620, 700, 600],
+              symbol: 'circle',
+              symbolSize: 6,
+              itemStyle: { color: brandOrange },
+              lineStyle: { color: brandOrange, width: 2.4 },
+              areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: 'rgba(230,81,0,0.25)' },
+                  { offset: 1, color: 'rgba(230,81,0,0)' }
+                ])
+              }
+            },
+            {
+              name: '母乳',
+              type: 'line',
+              smooth: true,
+              data: [25, 30, 34, 32, 28, 40, 35],
+              symbol: 'circle',
+              symbolSize: 5,
+              itemStyle: { color: breastRed },
+              lineStyle: { color: breastRed, width: 2 }
+            },
+            {
+              name: '上周奶粉',
+              type: 'line',
+              smooth: true,
+              data: [560, 600, 640, 620, 610, 650, 580],
+              symbol: 'none',
+              lineStyle: { color: textTertiary, width: 1.4, type: 'dashed', opacity: 0.6 }
+            }
+          ]
+        });
+      }
+
+      function initPoop() {
+        const el = document.getElementById('chart-poop');
+        if (!el) return;
+        const chart = echarts.init(el);
+        const days = ['一', '二', '三', '四', '五', '六', '日'];
+        chart.setOption({
+          grid: baseGrid(),
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          xAxis: { type: 'category', data: days, ...baseAxis() },
+          yAxis: { type: 'value', name: '次', nameTextStyle: { color: '#999', fontSize: 10 }, ...baseAxis() },
+          series: [
+            {
+              name: '拉尿',
+              type: 'bar',
+              stack: 'p',
+              barWidth: 14,
+              data: [5, 6, 7, 6, 5, 8, 6],
+              itemStyle: { color: urineBlue, borderRadius: [0, 0, 4, 4] }
+            },
+            {
+              name: '拉屎',
+              type: 'bar',
+              stack: 'p',
+              barWidth: 14,
+              data: [1, 2, 1, 1, 2, 1, 2],
+              itemStyle: { color: stoolBrown, borderRadius: [4, 4, 0, 0] }
+            }
+          ]
+        });
+      }
+
+      function initMonth() {
+        const el = document.getElementById('chart-month');
+        if (!el) return;
+        const chart = echarts.init(el);
+        const days = Array.from({ length: 30 }, (_, i) => `${i + 1}`);
+        const data = [
+          520, 560, 620, 640, 600, 660, 680, 700, 720, 700, 690, 710, 700, 720, 740, 720, 760, 740, 720, 760, 780, 760,
+          740, 720, 700, 720, 740, 760, 780, 720
+        ];
+        chart.setOption({
+          grid: baseGrid(),
+          tooltip: { trigger: 'axis' },
+          xAxis: { type: 'category', data: days, ...baseAxis() },
+          yAxis: { type: 'value', name: 'ml', nameTextStyle: { color: '#999', fontSize: 10 }, ...baseAxis() },
+          series: [
+            {
+              name: '日奶量',
+              type: 'line',
+              smooth: true,
+              symbol: 'none',
+              data,
+              lineStyle: { color: brandOrange, width: 2 },
+              areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: 'rgba(230,81,0,0.22)' },
+                  { offset: 1, color: 'rgba(230,81,0,0)' }
+                ])
+              }
+            }
+          ]
+        });
+      }
+
+      function initSleep() {
+        const el = document.getElementById('chart-sleep');
+        if (!el) return;
+        const chart = echarts.init(el);
+        const days = ['一', '二', '三', '四', '五', '六', '日'];
+        // 24 小时 → 每 30 分钟为一格 = 48 段；简化用堆叠柱表达
+        const day = [10, 6, 10, 8, 12, 6, 10];
+        const night = [8, 10, 8, 10, 6, 12, 8];
+        chart.setOption({
+          grid: baseGrid(),
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          xAxis: { type: 'category', data: days, ...baseAxis() },
+          yAxis: { type: 'value', name: 'h', nameTextStyle: { color: '#999', fontSize: 10 }, ...baseAxis() },
+          series: [
+            {
+              name: '白天',
+              type: 'bar',
+              stack: 's',
+              barWidth: 16,
+              data: day,
+              itemStyle: { color: '#B39DDB', borderRadius: [0, 0, 4, 4] }
+            },
+            {
+              name: '夜间',
+              type: 'bar',
+              stack: 's',
+              barWidth: 16,
+              data: night,
+              itemStyle: { color: sleepPurple, borderRadius: [4, 4, 0, 0] }
+            }
+          ]
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        initMilk();
+        initPoop();
+        initMonth();
+        initSleep();
+      });
+    </script>
+  </body>
+</html>

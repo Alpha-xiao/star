@@ -194,7 +194,8 @@ export async function recordsRoutes(app: FastifyInstance) {
     return {
       items: records.map((record) => ({
         ...record,
-        recorder: { userId: record.user.id, nickname: record.user.nickname }
+        recorder: { userId: record.user.id, nickname: record.user.nickname },
+        source: record.source
       }))
     };
   });

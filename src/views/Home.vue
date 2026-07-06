@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Baby, Check, ChevronDown, CircleDot, Droplets, Heart, Moon, Plus, Star } from 'lucide-vue-next';
+import { Baby, Check, ChevronDown, CircleDot, Clock3, Droplets, Heart, Moon, Plus, Star } from 'lucide-vue-next';
 import { showToast } from 'vant';
 import { useRecordStore } from '@/stores/records';
 import { useSleepTimerStore } from '@/stores/sleep-timer';
 import { useBabyStore } from '@/stores/baby';
 import { submitRecord, type BabyRecord } from '@/utils/api';
+import BackfillDialog from '@/components/backfill/BackfillDialog.vue';
+import type { BackfillType } from '@/components/backfill/backfill-form';
 
 /**
  * 首页记录页：提供高频护理记录入口，并优先把操作写入本地 Store，
@@ -23,8 +25,16 @@ const showPoopSheet = ref(false);
 const showPeeSheet = ref(false);
 const showBreastDialog = ref(false);
 const showFormulaDialog = ref(false);
-const showManualSleepDialog = ref(false);
 const showBabySwitcher = ref(false);
+
+// 当前打开的补录类型；为 null 时表示未打开
+const backfillType = ref<BackfillType | null>(null);
+const backfillVisible = computed({
+  get: () => backfillType.value !== null,
+  set: (value) => {
+    if (!value) backfillType.value = null;
+  }
+});
 
 // --- 距上次喂奶计时器相关状态 ---
 const now = ref(new Date());
@@ -48,9 +58,6 @@ const peeOptions = [{ name: '量多' }, { name: '量少' }, { name: '换尿布' 
 const breastSide = ref<'左侧' | '右侧' | '双侧'>('左侧');
 const breastDuration = ref(15);
 const formulaAmount = ref(60);
-const manualSleepTime = ref('');
-const manualSleepDuration = ref(60);
-const manualSleepNote = ref('');
 
 const readonlyTip = '当前为只读成员，不能记录';
 
@@ -65,6 +72,56 @@ const ensureCanRecord = () => {
 const openRecordAction = (open: () => void) => {
   if (!ensureCanRecord()) return;
   open();
+};
+
+/** 打开指定类型的补录弹窗，附带只读校验 */
+const openBackfill = (type: BackfillType) => {
+  if (!ensureCanRecord()) return;
+  backfillType.value = type;
+};
+
+// --- 长按 400ms 打开补录弹窗 ---
+const LONG_PRESS_MS = 400;
+let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+// 触发长按后，同一次交互的 click 需要被抑制一次，避免误触立即记录
+const suppressNextClick = ref(false);
+
+/** 清理长按计时器，避免 pointerup / pointercancel 情况下残留 */
+const clearLongPressTimer = () => {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+};
+
+/** 按下时启动长按计时；到期后触发补录弹窗并抑制随后的 click */
+const onRecordPointerDown = (type: BackfillType) => {
+  clearLongPressTimer();
+  suppressNextClick.value = false;
+  longPressTimer = setTimeout(() => {
+    longPressTimer = null;
+    suppressNextClick.value = true;
+    try {
+      navigator.vibrate?.(15);
+    } catch {
+      /* 忽略震动异常，部分设备不支持 */
+    }
+    openBackfill(type);
+  }, LONG_PRESS_MS);
+};
+
+/** 松手/离开：取消长按计时（若尚未触发） */
+const onRecordPointerEnd = () => {
+  clearLongPressTimer();
+};
+
+/** 判断 click 是否需要被长按抑制掉 */
+const handleRecordClick = (openImmediate: () => void) => {
+  if (suppressNextClick.value) {
+    suppressNextClick.value = false;
+    return;
+  }
+  openRecordAction(openImmediate);
 };
 
 /** 当天本地缓存中的记录列表 */
@@ -178,16 +235,6 @@ const submitFormula = () => {
   showFormulaDialog.value = false;
 };
 
-/** 打开手动睡眠弹窗，并用当前本地时间作为默认入睡时间。 */
-const openManualSleepDialog = () => {
-  if (!ensureCanRecord()) return;
-  const date = new Date();
-  manualSleepTime.value = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  manualSleepDuration.value = 60;
-  manualSleepNote.value = '';
-  showManualSleepDialog.value = true;
-};
-
 /** 开始当前宝宝的睡眠计时；真正的睡眠记录在结束时生成。 */
 const startSleep = () => {
   if (!ensureCanRecord() || !babyStore.currentBabyId) return;
@@ -202,37 +249,12 @@ const endSleep = async () => {
   if (success) showToast('已记录睡眠');
 };
 
-/**
- * 手动补录睡眠：以今天的本地 HH:mm 作为开始时间，按输入时长推导结束时间。
- * 提交后刷新清醒窗口，让睡眠卡片立即反映最新醒来时间。
- */
-const submitManualSleep = async () => {
-  if (!ensureCanRecord()) return;
-  const [hours, minutes] = manualSleepTime.value.split(':').map(Number);
-  const startedAt = new Date();
-  startedAt.setHours(hours, minutes, 0, 0);
-  const endedAt = new Date(startedAt.getTime() + manualSleepDuration.value * 60000);
-  const record: BabyRecord = {
-    clientId: crypto.randomUUID(),
-    event_type: '睡眠',
-    timestamp: startedAt.toISOString(),
-    endedAt: endedAt.toISOString(),
-    duration: manualSleepDuration.value,
-    note: manualSleepNote.value.trim() || undefined
-  };
-
-  store.addRecord(record);
-  await submitRecord(record);
-  await sleepTimerStore.refreshWakeWindow(babyStore.currentBabyId || undefined);
-  showManualSleepDialog.value = false;
-  showToast({ message: '睡眠记录成功', type: 'success' });
+/** 补录提交成功回调：睡眠补录需要刷新清醒窗口 */
+const onBackfillSubmitted = async (record: BabyRecord) => {
+  if (record.event_type === '睡眠') {
+    await sleepTimerStore.refreshWakeWindow(babyStore.currentBabyId || undefined);
+  }
 };
-
-const manualSleepDurationText = computed(() => {
-  const hours = Math.floor(manualSleepDuration.value / 60);
-  const minutes = manualSleepDuration.value % 60;
-  return hours <= 0 ? `${minutes}分钟` : `${hours}小时${minutes}分钟`;
-});
 
 /** 切换宝宝时清空本地即时记录缓存，并重新初始化该宝宝的睡眠计时器。 */
 const switchBaby = async (babyId: string) => {
@@ -308,8 +330,8 @@ onUnmounted(() => {
             v-if="!sleepTimerStore.isActive"
             class="press flex h-[clamp(34px,5.5vh,40px)] flex-1 items-center justify-center rounded-[14px] bg-white/15 text-sm font-bold text-white"
             :class="{ 'opacity-50': !babyStore.canRecord }"
-            @click="openManualSleepDialog">
-            手动记录
+            @click="openBackfill('sleep')">
+            补录睡眠
           </button>
           <button
             v-else
@@ -332,7 +354,11 @@ onUnmounted(() => {
     <div class="grid shrink-0 grid-cols-2 gap-[clamp(8px,1.4vh,12px)] pb-1">
       <button
         class="record-btn home-record-btn h-[116px] bg-[var(--formula-bg)] press"
-        @click="openRecordAction(() => (showFormulaDialog = true))">
+        @pointerdown="onRecordPointerDown('formula')"
+        @pointerup="onRecordPointerEnd"
+        @pointerleave="onRecordPointerEnd"
+        @pointercancel="onRecordPointerEnd"
+        @click="handleRecordClick(() => (showFormulaDialog = true))">
         <span class="record-badge home-record-badge bg-[var(--formula-icon-bg)] text-[var(--formula-color)]">
           <Plus :size="12" />
         </span>
@@ -340,11 +366,22 @@ onUnmounted(() => {
           <Baby :size="26" color="var(--formula-color)" />
         </span>
         <span class="text-[clamp(14px,2vh,15px)] font-semibold text-[var(--text-primary)]">奶粉</span>
+        <span
+          class="press absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/70 text-[var(--formula-color)] shadow-sm"
+          role="button"
+          aria-label="补录奶粉"
+          @click.stop="openBackfill('formula')">
+          <Clock3 :size="14" />
+        </span>
       </button>
 
       <button
         class="record-btn home-record-btn h-[116px] bg-[var(--breast-bg)] press"
-        @click="openRecordAction(() => (showBreastDialog = true))">
+        @pointerdown="onRecordPointerDown('breast')"
+        @pointerup="onRecordPointerEnd"
+        @pointerleave="onRecordPointerEnd"
+        @pointercancel="onRecordPointerEnd"
+        @click="handleRecordClick(() => (showBreastDialog = true))">
         <span class="record-badge home-record-badge bg-[var(--breast-icon-bg)] text-[var(--breast-color)]">
           <Plus :size="12" />
         </span>
@@ -352,11 +389,22 @@ onUnmounted(() => {
           <Heart :size="26" color="var(--breast-color)" />
         </span>
         <span class="text-[clamp(14px,2vh,15px)] font-semibold text-[var(--text-primary)]">母乳</span>
+        <span
+          class="press absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/70 text-[var(--breast-color)] shadow-sm"
+          role="button"
+          aria-label="补录母乳"
+          @click.stop="openBackfill('breast')">
+          <Clock3 :size="14" />
+        </span>
       </button>
 
       <button
         class="record-btn home-record-btn h-[116px] bg-[var(--urine-bg)] press"
-        @click="openRecordAction(() => (showPeeSheet = true))">
+        @pointerdown="onRecordPointerDown('urine')"
+        @pointerup="onRecordPointerEnd"
+        @pointerleave="onRecordPointerEnd"
+        @pointercancel="onRecordPointerEnd"
+        @click="handleRecordClick(() => (showPeeSheet = true))">
         <span class="record-badge home-record-badge bg-[var(--urine-icon-bg)] text-[var(--urine-color)]">
           <Plus :size="12" />
         </span>
@@ -364,12 +412,23 @@ onUnmounted(() => {
           <Droplets :size="26" color="var(--urine-color)" />
         </span>
         <span class="text-[clamp(14px,2vh,15px)] font-semibold text-[var(--text-primary)]">拉尿</span>
+        <span
+          class="press absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/70 text-[var(--urine-color)] shadow-sm"
+          role="button"
+          aria-label="补录拉尿"
+          @click.stop="openBackfill('urine')">
+          <Clock3 :size="14" />
+        </span>
       </button>
 
       <button
         class="record-btn home-record-btn h-[116px] bg-[var(--stool-bg)] press"
         :class="{ 'opacity-50 grayscale': !babyStore.canRecord }"
-        @click="openRecordAction(() => (showPoopSheet = true))">
+        @pointerdown="onRecordPointerDown('stool')"
+        @pointerup="onRecordPointerEnd"
+        @pointerleave="onRecordPointerEnd"
+        @pointercancel="onRecordPointerEnd"
+        @click="handleRecordClick(() => (showPoopSheet = true))">
         <span class="record-badge home-record-badge bg-[var(--stool-icon-bg)] text-[var(--stool-color)]">
           <Plus :size="12" />
         </span>
@@ -377,6 +436,13 @@ onUnmounted(() => {
           <CircleDot :size="26" color="var(--stool-color)" />
         </span>
         <span class="text-[clamp(14px,2vh,15px)] font-semibold text-[var(--text-primary)]">拉屎</span>
+        <span
+          class="press absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/70 text-[var(--stool-color)] shadow-sm"
+          role="button"
+          aria-label="补录拉屎"
+          @click.stop="openBackfill('stool')">
+          <Clock3 :size="14" />
+        </span>
       </button>
     </div>
 
@@ -451,33 +517,11 @@ onUnmounted(() => {
       </div>
     </van-dialog>
 
-    <van-dialog
-      v-model:show="showManualSleepDialog"
-      title="手动记录睡眠"
-      show-cancel-button
-      @confirm="submitManualSleep">
-      <div class="p-6">
-        <div class="mb-5">
-          <label class="mb-3 block text-sm text-[var(--text-tertiary)]">入睡时间</label>
-          <van-field v-model="manualSleepTime" type="time" input-align="center" />
-        </div>
-        <div class="mb-5 flex flex-col items-center">
-          <label class="mb-3 block text-sm text-[var(--text-tertiary)]">睡眠时长</label>
-          <van-stepper
-            v-model="manualSleepDuration"
-            :min="5"
-            :max="720"
-            :step="5"
-            integer
-            input-width="72px"
-            button-size="32px" />
-          <span class="mt-2 text-xs text-[var(--text-tertiary)]">{{ manualSleepDurationText }}</span>
-        </div>
-        <div class="mb-2">
-          <label class="mb-3 block text-sm text-[var(--text-tertiary)]">备注（选填）</label>
-          <van-field v-model="manualSleepNote" placeholder="例如：睡得很安稳" maxlength="100" show-word-limit />
-        </div>
-      </div>
-    </van-dialog>
+    <BackfillDialog
+      v-if="backfillType"
+      v-model:visible="backfillVisible"
+      :type="backfillType"
+      :baby-birthday="babyStore.baby?.birthday || null"
+      @submitted="onBackfillSubmitted" />
   </div>
 </template>

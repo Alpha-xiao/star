@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#E65100" />
+    <title>BabyStar · 离线</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --brand: #e65100;
+        --brand-secondary: #ff9a56;
+        --bg: #faf5f0;
+        --text: #2d2d2d;
+        --text-sub: #666666;
+        --card: #ffffff;
+        --shadow: 0 6px 18px rgba(80, 55, 30, 0.1);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --brand: #ff9a56;
+          --brand-secondary: #ffb274;
+          --bg: #17120f;
+          --text: #f7eee8;
+          --text-sub: #a99387;
+          --card: #241b16;
+          --shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .card {
+        max-width: 420px;
+        width: 100%;
+        background: var(--card);
+        border-radius: 20px;
+        padding: 32px 24px;
+        text-align: center;
+        box-shadow: var(--shadow);
+      }
+      .logo {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 16px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--brand-secondary), var(--brand));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 1px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 0 0 20px;
+        color: var(--text-sub);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 44px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--brand-secondary), var(--brand));
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .tip {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--text-sub);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="logo">BS</div>
+      <h1>暂时无法连接网络</h1>
+      <p>已经离线，但记录会缓存在本地，恢复网络后自动同步。</p>
+      <button class="btn" onclick="location.reload()">重试连接</button>
+      <div class="tip">如果长时间无法恢复，请检查手机 Wi-Fi 或蜂窝网络。</div>
+    </main>
+  </body>
+</html>

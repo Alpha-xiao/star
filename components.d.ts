@@ -11,6 +11,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BackfillDialog: typeof import('./src/components/backfill/BackfillDialog.vue')['default']
+    BackfillTimeField: typeof import('./src/components/backfill/BackfillTimeField.vue')['default']
+    BackfillTypeSheet: typeof import('./src/components/backfill/BackfillTypeSheet.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     VanActionSheet: typeof import('vant/es')['ActionSheet']
@@ -25,5 +28,6 @@ declare module 'vue' {
     VanSwipeCell: typeof import('vant/es')['SwipeCell']
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
+    VanTimePicker: typeof import('vant/es')['TimePicker']
   }
 }

@@ -21,6 +21,8 @@ export interface BabyRecord {
   note?: string;
   endedAt?: string;
   recorder?: { userId: string; nickname?: string | null };
+  /** 记录来源：pwa=实时记录，backfill=历史补录 */
+  source?: 'web' | 'pwa' | 'backfill';
 }
 
 /** 当前用户可访问的宝宝档案，relation 表示当前用户在该宝宝家庭中的角色。 */
@@ -68,7 +70,7 @@ interface BackendRecordPayload {
   side?: BackendSide;
   amount?: number;
   note?: string;
-  source: 'pwa';
+  source: 'web' | 'pwa' | 'backfill';
 }
 
 /** 后端返回的护理记录结构，字段命名与 Prisma/API 保持一致。 */
@@ -83,6 +85,7 @@ interface BackendRecord {
   amount?: number;
   note?: string;
   recorder?: { userId: string; nickname?: string | null };
+  source?: 'web' | 'pwa' | 'backfill';
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
@@ -351,7 +354,7 @@ function toBackendPayload(record: BabyRecord): BackendRecordPayload {
     amount: eventType === 'formula' ? record.amount : undefined,
     note: eventType === 'poop' || eventType === 'pee' || eventType === 'sleep' ? record.note : undefined,
     // userId 仍保留在前端载荷结构中，实际归属以后端鉴权用户为准。
-    source: 'pwa'
+    source: record.source ?? 'pwa'
   };
 }
 
@@ -378,6 +381,17 @@ export async function submitRecord(record: BabyRecord): Promise<boolean> {
     showToast({ message: '网络不佳，已暂存本地', type: 'fail' });
     return false;
   }
+}
+
+/**
+ * 提交单条历史补录记录。
+ *
+ * 与 submitRecord 共用离线暂存和幂等机制，仅把 source 标记为 backfill，
+ * 便于统计和明细页区分补录与实时记录。
+ */
+export async function submitBackfillRecord(record: BabyRecord): Promise<boolean> {
+  record.source = 'backfill';
+  return submitRecord(record);
 }
 
 /** 按 clientId 更新护理记录，仅提交当前记录类型需要的可编辑字段。 */
@@ -480,12 +494,28 @@ export function formatDateValue(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+/** 格式化为 HH:mm，供补录时间字段与首页快捷按钮共用。 */
+export function formatTimeValue(date: Date) {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
 /** 查询某天的后端统计汇总，统计结果不依赖本地缓存。 */
 export async function fetchDailyStats(date = formatDateValue(new Date())): Promise<DailyStats> {
   const params = new URLSearchParams({ babyId: getBabyId(), date });
   const response = await apiFetch(`${API_BASE_URL}/stats/daily?${params.toString()}`);
   if (!response.ok) throw new Error('Fetch daily stats failed');
   return response.json();
+}
+
+/** 查询某区间内每日的聚合统计，用于历史趋势周/月视图。 */
+export async function fetchRangeStats(babyId: string, from: string, to: string): Promise<DailyStats[]> {
+  const params = new URLSearchParams({ babyId, from, to });
+  const response = await apiFetch(`${API_BASE_URL}/stats/range?${params.toString()}`);
+  if (!response.ok) throw new Error('Fetch range stats failed');
+  const result: { items: DailyStats[] } = await response.json();
+  return result.items;
 }
 
 /** 按东八区自然日构造查询区间，保证统计页日期与用户本地选择一致。 */
@@ -506,7 +536,8 @@ function toBabyRecord(record: BackendRecord): BabyRecord {
     side: record.side ? backendSideMap[record.side] : undefined,
     amount: record.amount,
     note: record.note,
-    recorder: record.recorder
+    recorder: record.recorder,
+    source: record.source
   };
 }
 

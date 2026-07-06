@@ -31,6 +31,10 @@ export const recordDetailSchema = recordDetailBaseSchema.superRefine((value, ctx
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['endedAt'], message: '醒来时间必须晚于入睡时间' });
     }
   }
+  // 补录也不允许指定未来时间；预留 60 秒容差以兼容客户端与服务端时钟偏差
+  if (new Date(value.happenedAt).getTime() > Date.now() + 60_000) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['happenedAt'], message: '补录时间不能是未来时间' });
+  }
 });
 
 export const createRecordSchema = recordDetailBaseSchema
@@ -38,7 +42,7 @@ export const createRecordSchema = recordDetailBaseSchema
     clientId: z.string().min(1),
     babyId: z.string().uuid(),
     userId: z.string().uuid(),
-    source: z.enum(['web', 'pwa']).default('pwa')
+    source: z.enum(['web', 'pwa', 'backfill']).default('pwa')
   })
   .superRefine((value, ctx) => {
     const result = recordDetailSchema.safeParse(value);

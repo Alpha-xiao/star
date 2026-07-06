@@ -24,6 +24,7 @@ enum BreastSide {
 enum RecordSource {
   web
   pwa
+  backfill
 }
 
 enum FamilyRole {
